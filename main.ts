@@ -15,14 +15,7 @@ const config = JSON.parse(readFileSync("config.json", "utf8"))
       console.log(config);
 
       console.log(values);//process.exit();
-const ConfigSchema = z.object({
-  h5pJsonTemplate: z.string().min(1, "Path cannot be empty"),
-  contentJsonTemplate: z.string().min(1),
-  outFolder: z.string().min(1),
-  questionSetFFolderTemplate: z.string().min(1),
-  cards: z.string().min(1),
-  folderTemplate: z.string().min(1),
-});
+
 
 const unsafePaths = ((paths) => {
   if(!paths){
@@ -58,7 +51,14 @@ const unsafePaths = ((paths) => {
   }  
 })(values.paths);
 // Run: node script.js --port 3000 --debug
-
+const ConfigSchema = z.object({
+  h5pJsonTemplate: z.string().min(1, "Path cannot be empty"),
+  contentJsonTemplate: z.string().min(1),
+  outFolder: z.string().min(1),
+  questionSetFFolderTemplate: z.string().min(1),
+  cards: z.string().min(1),
+  folderTemplate: z.string().min(1),
+});
 const paths = ConfigSchema.parse(unsafePaths);
 
 
@@ -188,40 +188,7 @@ function chunkToMulti(chunks: qna[][]){//: multi[][]{
   return ret; 
 }
 
-/*
-export function multiToH5P(multiReady: multi[][]): H5PQuestionSet[] {
-  return multiReady.map((chunk, index) => {
-    const questions: H5PMultiChoice[] = chunk.map(item => ({
-      library: "H5P.MultiChoice 1.14",
-      params: {
-        question: item.qna.question,
-        answers: [
-          { text: item.qna.answer, correct: true },
-          ...item.wrong.map(w => ({
-            text: w.answer,
-            correct: false
-          }))
-        ],
-        behaviour: {
-          enableRetry: true,
-          enableSolutionsButton: true,
-          randomAnswers: true
-        }
-      }
-    }));
 
-    return {
-      library: "H5P.QuestionSet 1.17",
-      params: {
-        title: `Quiz ${index + 1}`,
-        introPage: { showIntroPage: false },
-        endPage: { showResultPage: true },
-        questions
-      }
-    };
-  });
-}
-*/
 
 function createH5pJsonFiles(data: multi[][]){
   for(let i = 0; i < data.length; i++){
@@ -288,10 +255,7 @@ function createContentJsonFilesMultiChoice(data: multi[][]){
       content.questions.push(question);
       
     }
-    //console.log(content?.questions[0]?.params.answers); process.exit();
-    // @todo - update structure
-//console.log(content);
-
+  
     const folder = `${paths.outFolder}/Quiz${i+1}/content`;
     mkdirSync(folder, { recursive: true });
     writeFileSync(
@@ -304,20 +268,7 @@ function createContentJsonFilesMultiChoice(data: multi[][]){
 // Example usage:
 const chunks = loadChunks(paths.cards);
 const multiReady = chunkToMulti(chunks);
-//const h5pSets = multiToH5P(multiReady);
 
-// Write first quiz to disk
-/*
-let i = 0;
-for (let i = 0; i < h5pSets.length; i++){
-  writeFileSync(
-    `${paths.outFolder}/quiz_${i}.json`,
-    JSON.stringify(h5pSets[i], null, 2),
-    "utf8"
-  );
-  
-}
-*/
 function createFoldersFromTemplate(data: multi[][]){
   for(let i = 0; i < data.length; i++){
    "paths.folderTemplate"    //create folder for  quiz
@@ -327,7 +278,3 @@ function createFoldersFromTemplate(data: multi[][]){
 createFoldersFromTemplate(multiReady);
 createH5pJsonFiles(multiReady)
 createContentJsonFilesMultiChoice(multiReady);
-//console.log(h5pSets[0]?.params.questions);
-//console.log(multiReady[0][0], multiReady[0][0].wrong);
-//console.log("Number of chunks:", chunks.length);
-//console.log("First chunk:", chunks[0]);
