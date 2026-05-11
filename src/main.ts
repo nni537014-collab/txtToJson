@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync, cpSync } from "fs";
 import { randomUUID } from "crypto";
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
@@ -275,8 +275,14 @@ const chunks = loadChunks(path.resolve(__dirname, paths.cards));
 const multiReady = chunkToMulti(chunks);
 
 function createFoldersFromTemplate(data: multi[][]){
+  const folderTemplate = path.resolve(__dirname, paths.folderTemplate);
+
   for(let i = 0; i < data.length; i++){
-   "paths.folderTemplate"    //create folder for  quiz
+    //@todo /quiz --- remove strings!!
+    const folder = `${path.resolve(__dirname, paths.outFolder)}/Quiz${i + 1}`;
+
+    mkdirSync(folder, { recursive: true });
+    cpSync(folderTemplate, folder, {recursive: true});
     //copy default folder to created folder
   }
 }
