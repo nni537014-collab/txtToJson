@@ -1,0 +1,5 @@
+export "dialog" card and "fill the blank" json structures
+
+dialog card structure - reptition mode and moodle storage
+
+"ftb" - allow repeats

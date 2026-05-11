@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+out/
+build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+
+# IDE/editor
+.vscode/
+.idea/
+
+# H5P generated output (if you generate .h5p files here)
+*.h5p
+
+# Temporary files
+tmp/
+temp/
+
+# Your generated quizsets (optional)
+quizsets/

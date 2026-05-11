@@ -1,0 +1,22 @@
+
+{
+  "paths": [
+    {
+      "booth": {
+        "h5pJsonTemplate": "C:/Users/Booth/Downloads/question-set/h5p.json",
+        "contentJsonTemplate": "C:/Users/Booth/Downloads/question-set/content/content.json",
+        "questionSetFFolderTemplate": "C:/Users/Booth/Downloads/question-set",
+        "outFolder": "C:/Users/Booth/quizzes",
+        "cards": "C:/Users/Booth/cards.txt",
+        "folderTemplate": "./assets/h5p/qset"
+      }
+    },
+    {
+      "linux": {
+        "h5pJsonTemplate": "C:/Users/Booth/Downloads/question-set/h5p.json",
+        "contentJsonTemplate": "C:/Users/Booth/Downloads/question-set/content/content.json",
+        "questionSetFFolderTemplate": "C:/Users/Booth/Downloads/question-set"
+      }
+    }  
+  ]
+}
