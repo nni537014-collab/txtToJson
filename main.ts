@@ -27,10 +27,10 @@ const ConfigSchema = z.object({
 const unsafePaths = ((paths) => {
   if(!paths){
     return {
-      h5pJsonTemplate: "C:/Users/Booth/Downloads/question-set/h5p.json",  
-      contentJsonTemplate: "C:/Users/Booth/Downloads/question-set/content/content.json",
+      h5pJsonTemplate: "./assets/h5p/qset/h5p.json",  
+      contentJsonTemplate: "./assets/h5p/qset/content/content.json",
       outFolder: `C:/Users/Booth/quizzes`,
-      questionSetFFolderTemplate: "C:/Users/Booth/Downloads/question-set", 
+      questionSetFFolderTemplate: "./assets/h5p/qset", 
       cards: "C:/Users/Booth/cards.txt",
       folderTemplate: "./assets/h5p/qset"
     }
