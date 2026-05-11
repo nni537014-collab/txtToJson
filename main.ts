@@ -31,22 +31,35 @@ const unsafePaths = ((paths) => {
       contentJsonTemplate: "./assets/h5p/qset/content/content.json",
       outFolder: `C:/Users/Booth/quizzes`,
       questionSetFFolderTemplate: "./assets/h5p/qset", 
-      cards: "C:/Users/Booth/cards.txt",
+      cards: "./assets/cards.txt",
       folderTemplate: "./assets/h5p/qset"
     }
   } else {
-      console.log(paths, config);process.exit();
-    
-    if(config.paths[paths]){
-      console.log(config);process.exit();
-      return config.paths[paths]
+      console.log(paths, config);
+    if (Array.isArray(config.paths)){
+      let p = config.paths as any[];
+        const foundIndex = p.findIndex((value)=>{
+          if (typeof value === 'object' && value !== null && !Array.isArray(value)){
+            let correctPaths = value[paths];
+            if (typeof correctPaths === 'object' && correctPaths !== null && !Array.isArray(correctPaths)) {
+
+              return true;
+
+            } else {
+              return false;
+
+            }
+          } 
+        })
+        if(foundIndex !== -1 ){
+          return config.paths[foundIndex][paths];
+        }
     }
   }  
 })(values.paths);
 // Run: node script.js --port 3000 --debug
 
 const paths = ConfigSchema.parse(unsafePaths);
-
 
 
 const h5pTemplateRaw = readFileSync(paths.h5pJsonTemplate, "utf8");
