@@ -1,22 +1,23 @@
 import { mkdirSync, readFileSync, writeFileSync, cpSync } from "fs";
 import { randomUUID } from "crypto";
-import { getConfig,
-         config,
-         paths,
-         h5pTemplate,
-         contentTemplate,
+import { //config,
+         //paths,
+         getH5pTemplate,
+         getContentTemplate,
          getQuizFolder,
-         getFolderTemplate,
+         getFolderTemplatePath,
          getCardsPath
         } from './util/data.ts'
 
 import type { qna
             ,  multi
+            /*
             ,  H5PMultiChoiceAnswer
             , H5PMultiChoiceParams
             , H5PMultiChoice
             , H5PQuestionSetParams
-            , H5PQuestionSet } from './types/base.ts'
+            , H5PQuestionSet
+            */ } from './types/base.ts'
 
 export function loadChunks(path: string): qna[][] {
   // read whole file as UTF‑8 text
@@ -28,7 +29,7 @@ export function loadChunks(path: string): qna[][] {
   // skip first 2 lines
   const data = lines.slice(2);
 
-const chunks: qna[][] = [];
+  const chunks: qna[][] = [];
 
   for (let i = 0; i < data.length; i += 20) {
     const slice = data.slice(i, i + 20).filter(Boolean); // remove empty lines
@@ -88,9 +89,9 @@ function chunkToMulti(chunks: qna[][]){//: multi[][]{
 
 
 
-const createH5pJsonFiles = (data: multi[][]) => {
+const createH5pJsonFiles = (data: qna[][]) => {
   for(let i = 0; i < data.length; i++){
-    let h5p = structuredClone(h5pTemplate);
+    let h5p = structuredClone(getH5pTemplate);
     if(h5p?.title){
         h5p.title = `Quiz no. ${i + 1}`;
     } else {
@@ -110,7 +111,7 @@ const createH5pJsonFiles = (data: multi[][]) => {
 function createContentJsonFilesMultiChoice(data: multi[][]){
   
   for(let i = 0; i < data.length; i++){
-    let content = structuredClone(contentTemplate);
+    let content = structuredClone(getContentTemplate);
     let questionTemplate = structuredClone(content?.questions[0]);
     // reset questions after taking template
     content.questions = []
@@ -162,19 +163,19 @@ function createContentJsonFilesMultiChoice(data: multi[][]){
     );
   }
 }
-// Example usage:
-const chunks = loadChunks(getCardsPath());
-const multiReady = chunkToMulti(chunks);
 
-function createFoldersFromTemplate(data: multi[][]){
+
+function createFoldersFromTemplate(data: qna[][]){
 
   for(let i = 0; i < data.length; i++){
     //@todo /quiz --- remove strings!!
     mkdirSync(getQuizFolder(i), { recursive: true });
-    cpSync(getFolderTemplate(), getQuizFolder(i), {recursive: true});
+    cpSync(getFolderTemplatePath(), getQuizFolder(i), {recursive: true});
     //copy default folder to created folder
   }
 }
-createFoldersFromTemplate(multiReady);
-createH5pJsonFiles(multiReady)
-createContentJsonFilesMultiChoice(multiReady);
+
+const asQna = loadChunks(getCardsPath())
+createFoldersFromTemplate(asQna);
+createH5pJsonFiles(asQna)
+createContentJsonFilesMultiChoice(chunkToMulti(asQna));
