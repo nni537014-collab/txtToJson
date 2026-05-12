@@ -1,10 +1,12 @@
-export type qna = {
+export type Qna = {
     question: string;
     answer: string;
 }
-export type QnaChunks = qna[][];
+export type QnaChunks = Qna[][];
 
-export type multi = {
-    qna: qna;
-    wrong: qna[];
+export type Multi = {
+    qna: Qna;
+    wrong: Qna[];
 }
+
+export type MultiChunks = Multi[][];
