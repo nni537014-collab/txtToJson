@@ -1,95 +1,21 @@
 import { mkdirSync, readFileSync, writeFileSync, cpSync } from "fs";
 import { randomUUID } from "crypto";
-import { //config,
-         //paths,
-         getH5pTemplate,
+import type { 
+              multi, 
+              QnaChunks} from './types/base.ts'
+import { getH5pTemplate,
          getContentTemplate,
          getQuizFolder,
          getFolderTemplatePath,
-         getCardsPath
-        } from './util/data.ts'
-
-import type { qna
-            ,  multi
-            /*
-            ,  H5PMultiChoiceAnswer
-            , H5PMultiChoiceParams
-            , H5PMultiChoice
-            , H5PQuestionSetParams
-            , H5PQuestionSet
-            */ } from './types/base.ts'
-
-export function loadChunks(path: string): qna[][] {
-  // read whole file as UTF‑8 text
-  const raw = readFileSync(path, "utf8");
-
-  // split into lines (handles Windows + Linux newlines)
-  const lines = raw.split(/\r?\n/);
-
-  // skip first 2 lines
-  const data = lines.slice(2);
-
-  const chunks: qna[][] = [];
-
-  for (let i = 0; i < data.length; i += 20) {
-    const slice = data.slice(i, i + 20).filter(Boolean); // remove empty lines
-
-    if (!slice.length) continue;
-
-    // convert each line into a qna object
-    const qnas: qna[] = slice.map<qna>((line: string) => {
-      const [question, answer] = line.split("\t");
-
-      return {
-        question: question?.trim() ?? "",
-        answer: answer?.trim() ?? ""
-      };
-    });
-
-    chunks.push(qnas);
-  }
-
-  return chunks;
-}
-
-function chunkToMulti(chunks: qna[][]){//: multi[][]{
-  let ret: multi[][] = [];  
-  for(let j=0; j < chunks.length; j++ ) {
-     const chunk = chunks[j];
-     if(!chunk) continue
-     for(let k=0; k < chunk.length; k++){
-        const row = chunk[k];
-        if(!row) continue;
-        let rowList = ret[j];
-        if(!rowList){
-            rowList = [];
-            ret[j] = rowList;
-        }
-        let mul = rowList[k] = {
-            qna: row,
-            wrong: new Array<qna>()
-        };
-        
-        while (mul.wrong.length < 3 ){
-            const target = Math.floor(Math.random() * chunk.length);
-            if (target == k) continue;
-            const targetQna = chunk[target]
-            
-            if (targetQna){
-              if (mul.wrong.includes(targetQna)) continue;
-              mul.wrong.push(targetQna)
-            }
-            
-
-        }  
-     }
-  }
-  return ret; 
-}
+         getCardsPath,
+         loadChunks,
+         chunkToMulti } from './util/data.ts'
 
 
 
-const createH5pJsonFiles = (data: qna[][]) => {
+
+
+const createH5pJsonFiles = (data: QnaChunks) => {
   for(let i = 0; i < data.length; i++){
     let h5p = structuredClone(getH5pTemplate);
     if(h5p?.title){
@@ -165,7 +91,7 @@ function createContentJsonFilesMultiChoice(data: multi[][]){
 }
 
 
-function createFoldersFromTemplate(data: qna[][]){
+function createFoldersFromTemplate(data: QnaChunks){
 
   for(let i = 0; i < data.length; i++){
     //@todo /quiz --- remove strings!!
