@@ -15,8 +15,13 @@ const options = {
   type: 'string'
 }
 } as const;
+
+const getConfig = () => {
+  return JSON.parse(readFileSync(path.resolve(__dirname, "../config.json"), "utf8"))
+}
+
 const { values } = parseArgs({ args, options });
-const config = JSON.parse(readFileSync(path.resolve(__dirname, "../config.json"), "utf8"))
+const config = getConfig()
       console.log(config);
 
       console.log(values);//process.exit();
@@ -66,15 +71,28 @@ const ConfigSchema = z.object({
 });
 const paths = ConfigSchema.parse(unsafePaths);
 
-console.log(paths);
-const h5pTemplateRaw = readFileSync(path.resolve(__dirname, paths.h5pJsonTemplate), "utf8");
-const h5pTemplate = JSON.parse(h5pTemplateRaw);
-
+const h5pTemplate = (() => {
+  const h5pTemplateRaw = readFileSync(path.resolve(__dirname, paths.h5pJsonTemplate), "utf8");
+  return JSON.parse(h5pTemplateRaw);
+})()
+const contentTemplate = (() => {
+  const contentTemplateRaw = readFileSync(path.resolve(__dirname, paths.contentJsonTemplate), "utf8");
+  return JSON.parse(contentTemplateRaw);
+})()
  
-const contentTemplateRaw = readFileSync(path.resolve(__dirname, paths.contentJsonTemplate), "utf8");
-const contentTemplate = JSON.parse(contentTemplateRaw);
+  const outFolder = `${path.resolve(__dirname, paths.outFolder)}`;
 
+const getQuizFolder = (i:number) => {
+  return `${outFolder}/Quiz${i+1}`
+}
+const getFolderTemplate = () => {
+  return path.resolve(__dirname, paths.folderTemplate);
 
+}
+const folderTemplate = path.resolve(__dirname, paths.folderTemplate);
+const getCardsPath = () = {
+  return path.resolve(__dirname, paths.cards);
+}
 type qna = {
     question: string;
     answer: string;
@@ -195,7 +213,7 @@ function chunkToMulti(chunks: qna[][]){//: multi[][]{
 
 
 
-function createH5pJsonFiles(data: multi[][]){
+const createH5pJsonFiles = (data: multi[][]) => {
   for(let i = 0; i < data.length; i++){
     let h5p = structuredClone(h5pTemplate);
     if(h5p?.title){
@@ -203,8 +221,7 @@ function createH5pJsonFiles(data: multi[][]){
     } else {
         console.warn("no title in json")
     }
-    
-    const folder = `${path.resolve(__dirname, paths.outFolder)}/Quiz${i+1}`;
+    const folder = getQuizFolder(i);     
     mkdirSync(folder, { recursive: true });
     writeFileSync(
       `${folder}/h5p.json`,
@@ -261,7 +278,7 @@ function createContentJsonFilesMultiChoice(data: multi[][]){
       
     }
   
-    const folder = `${path.resolve(__dirname, paths.outFolder)}/Quiz${i+1}/content`;
+    const folder = `${getQuizFolder(i)}/content`;
     mkdirSync(folder, { recursive: true });
     writeFileSync(
       `${folder}/content.json`,
@@ -271,18 +288,15 @@ function createContentJsonFilesMultiChoice(data: multi[][]){
   }
 }
 // Example usage:
-const chunks = loadChunks(path.resolve(__dirname, paths.cards));
+const chunks = loadChunks(getCardsPath());
 const multiReady = chunkToMulti(chunks);
 
 function createFoldersFromTemplate(data: multi[][]){
-  const folderTemplate = path.resolve(__dirname, paths.folderTemplate);
 
   for(let i = 0; i < data.length; i++){
     //@todo /quiz --- remove strings!!
-    const folder = `${path.resolve(__dirname, paths.outFolder)}/Quiz${i + 1}`;
-
-    mkdirSync(folder, { recursive: true });
-    cpSync(folderTemplate, folder, {recursive: true});
+    mkdirSync(getQuizFolder(i), { recursive: true });
+    cpSync(getFolderTemplate(), getQuizFolder(i), {recursive: true});
     //copy default folder to created folder
   }
 }
