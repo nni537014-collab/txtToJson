@@ -1,147 +1,22 @@
 import { mkdirSync, readFileSync, writeFileSync, cpSync } from "fs";
 import { randomUUID } from "crypto";
-import { parseArgs } from 'node:util';
-import { z } from 'zod';
-import path from "path";
-import { fileURLToPath } from "url";
+import { getConfig,
+         config,
+         paths,
+         h5pTemplate,
+         contentTemplate,
+         getQuizFolder,
+         getFolderTemplate,
+         getCardsPath
+        } from './util/data.ts'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// 1. Define the schema
-const args =  process.argv.slice(2);
-const options = {
-  paths: {
-  type: 'string'
-}
-} as const;
-
-const getConfig = () => {
-  return JSON.parse(readFileSync(path.resolve(__dirname, "../config.json"), "utf8"))
-}
-
-const { values } = parseArgs({ args, options });
-const config = getConfig()
-      console.log(config);
-
-      console.log(values);//process.exit();
-
-
-const unsafePaths = ((paths) => {
-  if(!paths){
-    return {
-      h5pJsonTemplate: "../assets/h5p/qset/h5p.json",  
-      contentJsonTemplate: "../assets/h5p/qset/content/content.json",
-      outFolder: `../dist/quizzes`,
-      questionSetFFolderTemplate: "../assets/h5p/qset", 
-      cards: "../assets/cards.txt",
-      folderTemplate: "../assets/h5p/qset"
-    }
-  } else {
-      console.log(paths, config);
-    if (Array.isArray(config.paths)){
-      let p = config.paths as any[];
-        const foundIndex = p.findIndex((value)=>{
-          if (typeof value === 'object' && value !== null && !Array.isArray(value)){
-            let correctPaths = value[paths];
-            if (typeof correctPaths === 'object' && correctPaths !== null && !Array.isArray(correctPaths)) {
-
-              return true;
-
-            } else {
-              return false;
-
-            }
-          } 
-        })
-        if(foundIndex !== -1 ){
-          return config.paths[foundIndex][paths];
-        }
-    }
-  }  
-})(values.paths);
-// Run: node script.js --port 3000 --debug
-const ConfigSchema = z.object({
-  h5pJsonTemplate: z.string().min(1, "Path cannot be empty"),
-  contentJsonTemplate: z.string().min(1),
-  outFolder: z.string().min(1),
-  questionSetFFolderTemplate: z.string().min(1),
-  cards: z.string().min(1),
-  folderTemplate: z.string().min(1),
-});
-const paths = ConfigSchema.parse(unsafePaths);
-
-const h5pTemplate = (() => {
-  const h5pTemplateRaw = readFileSync(path.resolve(__dirname, paths.h5pJsonTemplate), "utf8");
-  return JSON.parse(h5pTemplateRaw);
-})()
-const contentTemplate = (() => {
-  const contentTemplateRaw = readFileSync(path.resolve(__dirname, paths.contentJsonTemplate), "utf8");
-  return JSON.parse(contentTemplateRaw);
-})()
- 
-  const outFolder = `${path.resolve(__dirname, paths.outFolder)}`;
-
-const getQuizFolder = (i:number) => {
-  return `${outFolder}/Quiz${i+1}`
-}
-const getFolderTemplate = () => {
-  return path.resolve(__dirname, paths.folderTemplate);
-
-}
-const folderTemplate = path.resolve(__dirname, paths.folderTemplate);
-const getCardsPath = () = {
-  return path.resolve(__dirname, paths.cards);
-}
-type qna = {
-    question: string;
-    answer: string;
-}
-type multi = {
-    qna: qna;
-    wrong: qna[];
-}
-
-export interface H5PMultiChoiceAnswer {
-  text: string;
-  correct: boolean;
-}
-
-export interface H5PMultiChoiceParams {
-  question: string;
-  answers: H5PMultiChoiceAnswer[];
-  behaviour?: {
-    enableRetry?: boolean;
-    enableSolutionsButton?: boolean;
-    randomAnswers?: boolean;
-  };
-}
-export interface H5PMultiChoice {
-  library: "H5P.MultiChoice 1.14" | "H5P.MultiChoice 1.15";
-  params: H5PMultiChoiceParams;
-}
-
-export interface H5PQuestionSetParams {
-  title?: string;
-  introPage?: {
-    showIntroPage: boolean;
-    title?: string;
-    introduction?: string;
-  };
-  endPage?: {
-    showResultPage: boolean;
-    title?: string;
-    subtitle?: string;
-  };
-  questions: H5PMultiChoice[];
-}
-
-export interface H5PQuestionSet {
-  library: "H5P.QuestionSet 1.17" | "H5P.QuestionSet 1.18";
-  params: H5PQuestionSetParams;
-}
-
-
+import type { qna
+            ,  multi
+            ,  H5PMultiChoiceAnswer
+            , H5PMultiChoiceParams
+            , H5PMultiChoice
+            , H5PQuestionSetParams
+            , H5PQuestionSet } from './types/base.ts'
 
 export function loadChunks(path: string): qna[][] {
   // read whole file as UTF‑8 text
