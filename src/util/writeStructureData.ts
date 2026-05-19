@@ -1,7 +1,8 @@
 import {
   mkdirSync,
   writeFileSync,
-  cpSync 
+  cpSync,
+  rmSync
 } from "fs";
 
 import {
@@ -21,9 +22,15 @@ import {
   dialogH5pTemplate,
   getDialogFolder,
   getDialogFolderTemplatePath,
-  dialogContentTemplate
+  dialogContentTemplate,
+  quizOutFolder,
+  dialogOutFolder,
 } from './config.ts'
 
+export const rmDistFolder = () => {
+  rmSync(quizOutFolder, { recursive: true, force: true });
+  rmSync(dialogOutFolder, { recursive: true, force: true });
+}
 export const createQuizH5pJsonFiles = (data: QnaChunks) => {
   for(let i = 0; i < data.length; i++){
     let h5p = structuredClone(quizH5pTemplate);
@@ -86,33 +93,20 @@ export const createDialogContentJsonFiles = (data: MultiChunks) =>{
       let dialog = structuredClone(dialogTemplate);
       //add question text to structure
       dialog.text = `<p style="text-align:center;">${set[j]?.qna.question}</p>`;
-      //drill into question template to get a answer template 
-      //of which a few may be used
-      let answerTemplate = structuredClone(dialogTemplate?.params?.answers[0]);
-      //create clone of ans templ for the one correct ans possible at 
-      // the moment
-      let correctAnswer = structuredClone(answerTemplate);
-      correctAnswer.correct = true;
+
       // @todo refactor and encapsulate the html wrapping
       dialog.answer = `<p style="text-align:center;">${ set[j]?.qna.answer }</p>`
-      //ans array can store correct and incorrect answers
-      let answers: any[] = [];
-      answers.push(correctAnswer);
-      //deal with all wrong ans
-      set[j]?.wrong.map((wrongUn: any)=>{
-        let answer = structuredClone(answerTemplate);
-        answer.correct = false;
-        answer.text =  `<div>${wrongUn.answer}</div>`;
-        answers.push(answer); 
-      })
-      //add ans array to question structure
-      
-      dialog.params.answers = answers;
-      dialog.subContentId = randomUUID();
-      content.questions.push(dialog);
+   
+      content.dialogs.push(dialog);
       
     }
-
+    const folder = `${getDialogFolder(i)}/content`;
+    mkdirSync(folder, { recursive: true });
+    writeFileSync(
+      `${folder}/content.json`,
+       JSON.stringify(content, null),
+       "utf8"
+    );
   }
 }
 export const createQuizContentJsonFiles = (data: MultiChunks) =>{ 

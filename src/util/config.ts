@@ -65,6 +65,7 @@ const unsafePaths = ((paths) => {
 // Run: node script.js --port 3000 --debug
 const ConfigSchema = z.object({
   quizOutFolder: z.string().min(1),
+  dialogOutFolder: z.string().min(1),
   questionSetFolderTemplate: z.string().min(1),
   dialogFolderTemplate: z.string().min(1),
   cards: z.string().min(1),
@@ -102,12 +103,13 @@ export const dialogContentTemplate = (() => {
   return JSON.parse(contentTemplateRaw);
 })()
  
-
+export const quizOutFolder = path.resolve(__dirname, paths.quizOutFolder)
 export const getQuizFolder = (i:number) => {
-  return `${path.resolve(__dirname, paths.quizOutFolder)}/Quiz${i+1}`
+  return `${quizOutFolder}/Quiz${i+1}`
 }
+export const dialogOutFolder = path.resolve(__dirname, paths.dialogOutFolder);
 export const getDialogFolder = (i:number) => {
-  return `${path.resolve(__dirname, paths.quizOutFolder)}/Dialog${i+1}`
+  return `${dialogOutFolder}/Dialog${i+1}`
 }
 
 
