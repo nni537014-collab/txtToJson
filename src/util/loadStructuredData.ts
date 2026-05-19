@@ -2,6 +2,7 @@ import {readFileSync } from "fs";
 import type { Qna,
               MultiChunks,
               QnaChunks} from '../types/base.ts'
+              
 export function loadChunks(path: string): QnaChunks {
   // read whole file as UTF‑8 text
   const raw = readFileSync(path, "utf8");

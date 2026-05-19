@@ -5,8 +5,9 @@ import { z } from 'zod';
 import { parseArgs } from 'node:util';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename) + '/../';
-const dirSeparator = '/'
+const backToRoot = '/../../'
+const __dirname = path.dirname(__filename) + backToRoot;
+
 const h5pFilename = 'h5p.json'
 const h5pContentFolderName = 'content';
 const h5pContentFilename = 'content.json';
@@ -19,7 +20,7 @@ const options = {
 } as const;
 
 export const getConfig = () => {
-  return JSON.parse(readFileSync(path.resolve(__dirname, "../config.json"), "utf8"))
+  return JSON.parse(readFileSync(path.resolve(__dirname, "config.json"), "utf8"))
 }
 
 const { values } = parseArgs({ args, options });
@@ -32,12 +33,11 @@ export const config = getConfig()
 const unsafePaths = ((paths) => {
   if(!paths){
     return {
-      h5pJsonTemplate: "../assets/h5p/qset/h5p.json",  
-      contentJsonTemplate: "../assets/h5p/qset/content/content.json",
-      outFolder: `../dist/quizzes`,
-      questionSetFolderTemplate: "../assets/h5p/qset", 
-      cards: "../assets/cards.txt",
-      folderTemplate: "../assets/h5p/qset"
+      quizOutFolder: "dist/quizzes",
+      dialogOutFolder: "dist/dialogs",
+      questionSetFolderTemplate: "assets/h5p/qset",
+      dialogFolderTemplate: "assets/h5p/dialog",
+      cards: "assets/cards.txt"
     }
   } else {
       console.log(paths, config);
@@ -64,40 +64,53 @@ const unsafePaths = ((paths) => {
 })(values.paths);
 // Run: node script.js --port 3000 --debug
 const ConfigSchema = z.object({
-  h5pJsonTemplate: z.string().min(1, "Path cannot be empty"),
-  contentJsonTemplate: z.string().min(1),
-  outFolder: z.string().min(1),
+  quizOutFolder: z.string().min(1),
   questionSetFolderTemplate: z.string().min(1),
+  dialogFolderTemplate: z.string().min(1),
   cards: z.string().min(1),
-  folderTemplate: z.string().min(1),
 });
 export const paths = ConfigSchema.parse(unsafePaths);
-const getQuestionSetFolderTemplatePath = () => {
+export const getQuizFolderTemplatePath = () => {
   return path.resolve(__dirname, paths.questionSetFolderTemplate);
 }
-export const getQuizH5pTemplate = (() => {
-  const p = path.join(getQuestionSetFolderTemplatePath(),
+export const getDialogFolderTemplatePath = () => {
+  return path.resolve(__dirname, paths.dialogFolderTemplate);
+}
+export const quizH5pTemplate = (() => {
+  const p = path.join(getQuizFolderTemplatePath(),
                       h5pFilename);
   return JSON.parse(readFileSync(p, "utf8"));
 })()
-export const getQuizContentTemplate = (() => {
-  const p = path.join(getQuestionSetFolderTemplatePath(),
+export const dialogH5pTemplate = (() => {
+  const p = path.join(getDialogFolderTemplatePath(),
+                      h5pFilename);
+  return JSON.parse(readFileSync(p, "utf8"));
+})()
+export const quizContentTemplate = (() => {
+  const p = path.join(getQuizFolderTemplatePath(),
+                      h5pContentFolderName, 
+                      h5pContentFilename)
+  const contentTemplateRaw = readFileSync(p, "utf8");
+  return JSON.parse(contentTemplateRaw);
+})()
+
+export const dialogContentTemplate = (() => {
+  const p = path.join(getDialogFolderTemplatePath(),
                       h5pContentFolderName, 
                       h5pContentFilename)
   const contentTemplateRaw = readFileSync(p, "utf8");
   return JSON.parse(contentTemplateRaw);
 })()
  
-const outFolder = `${path.resolve(__dirname, paths.outFolder)}`;
 
 export const getQuizFolder = (i:number) => {
-  return `${outFolder}/Quiz${i+1}`
+  return `${path.resolve(__dirname, paths.quizOutFolder)}/Quiz${i+1}`
 }
-export const getQuizFolderTemplatePath = () => {
-  return path.resolve(__dirname, paths.folderTemplate);
+export const getDialogFolder = (i:number) => {
+  return `${path.resolve(__dirname, paths.quizOutFolder)}/Dialog${i+1}`
+}
 
-}
-export const folderTemplate = path.resolve(__dirname, paths.folderTemplate);
+
 export const getCardsPath = () => {
   return path.resolve(__dirname, paths.cards);
 }

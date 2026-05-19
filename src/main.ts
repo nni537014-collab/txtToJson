@@ -15,7 +15,8 @@ import {
 
 
 
-const asQna = loadChunks(getCardsPath())
+const asQna = loadChunks(getCardsPath());
 createQuizFoldersFromTemplate(asQna);
 createQuizH5pJsonFiles(asQna);
 createQuizContentJsonFiles(chunkToMulti(asQna));
+  
