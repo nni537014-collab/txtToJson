@@ -27,6 +27,8 @@ import {
   dialogOutFolder,
 } from './config.ts'
 
+import { jsTTSScript } from './contentRenderHelpers.ts'
+
 export const rmDistFolder = () => {
   rmSync(quizOutFolder, { recursive: true, force: true });
   rmSync(dialogOutFolder, { recursive: true, force: true });
@@ -110,7 +112,16 @@ export const createDialogContentJsonFiles = (data: MultiChunks) =>{
   }
 }
 export const createQuizContentJsonFiles = (data: MultiChunks) =>{ 
-  for(let i = 0; i < data.length; i++){
+const createAnsHtmlString = (ans: string) => {
+       return `${jsTTSScript()}
+         <div>
+            <span>${ ans }</span>
+            <button data-text="${encodeURIComponent(ans)}" onclick="speak(decodeURIComponent(this.dataset.text))">
+              listen
+            </button>             
+         </div>`;
+  }
+    for(let i = 0; i < data.length; i++){
     let content = structuredClone(quizContentTemplate);
     let questionTemplate = structuredClone(content?.questions[0]);
     // reset questions after taking template
@@ -135,7 +146,9 @@ export const createQuizContentJsonFiles = (data: MultiChunks) =>{
       let correctAnswer = structuredClone(answerTemplate);
       correctAnswer.correct = true;
       // @todo refactor and encapsulate the html wrapping
-      correctAnswer.text = `<div>${ set[j]?.qna.answer }</div>`
+      const ans = set[j]?.qna.answer;
+      if(!ans) continue
+      correctAnswer.text = createAnsHtmlString(ans);
       //ans array can store correct and incorrect answers
       let answers: any[] = [];
       answers.push(correctAnswer);
@@ -143,7 +156,7 @@ export const createQuizContentJsonFiles = (data: MultiChunks) =>{
       set[j]?.wrong.map((wrongUn: any)=>{
         let answer = structuredClone(answerTemplate);
         answer.correct = false;
-        answer.text =  `<div>${wrongUn.answer}</div>`;
+        answer.text =  createAnsHtmlString(wrongUn.answer);
         answers.push(answer); 
       })
       //add ans array to question structure

@@ -6,12 +6,12 @@ import { parseArgs } from 'node:util';
 
 const __filename = fileURLToPath(import.meta.url);
 const backToRoot = '/../../'
-const __dirname = path.dirname(__filename) + backToRoot;
-
+const __rootDirname = path.dirname(__filename) + backToRoot;
+const utilsFromRoot = "/src/util";
 const h5pFilename = 'h5p.json'
 const h5pContentFolderName = 'content';
 const h5pContentFilename = 'content.json';
-const ttsFilePath = `${__filename}/../tts.ts`
+const ttsFilePath = `${ __rootDirname }${ utilsFromRoot }/tts.ts`
 // 1. Define the schema
 const args =  process.argv.slice(2);
 const options = {
@@ -21,15 +21,11 @@ const options = {
 } as const;
 
 export const getConfig = () => {
-  return JSON.parse(readFileSync(path.resolve(__dirname, "config.json"), "utf8"))
+  return JSON.parse(readFileSync(path.resolve(__rootDirname, "config.json"), "utf8"))
 }
 
 const { values } = parseArgs({ args, options });
 export const config = getConfig()
-      console.log(config);
-
-      console.log(values);//process.exit();
-
 
 const unsafePaths = ((paths) => {
   if(!paths){
@@ -73,10 +69,10 @@ const ConfigSchema = z.object({
 });
 export const paths = ConfigSchema.parse(unsafePaths);
 export const getQuizFolderTemplatePath = () => {
-  return path.resolve(__dirname, paths.questionSetFolderTemplate);
+  return path.resolve(__rootDirname, paths.questionSetFolderTemplate);
 }
 export const getDialogFolderTemplatePath = () => {
-  return path.resolve(__dirname, paths.dialogFolderTemplate);
+  return path.resolve(__rootDirname, paths.dialogFolderTemplate);
 }
 export const quizH5pTemplate = (() => {
   const p = path.join(getQuizFolderTemplatePath(),
@@ -104,18 +100,18 @@ export const dialogContentTemplate = (() => {
   return JSON.parse(contentTemplateRaw);
 })()
  
-export const quizOutFolder = path.resolve(__dirname, paths.quizOutFolder)
+export const quizOutFolder = path.resolve(__rootDirname, paths.quizOutFolder)
 export const getQuizFolder = (i:number) => {
   return `${quizOutFolder}/Quiz${i+1}`
 }
-export const dialogOutFolder = path.resolve(__dirname, paths.dialogOutFolder);
+export const dialogOutFolder = path.resolve(__rootDirname, paths.dialogOutFolder);
 export const getDialogFolder = (i:number) => {
   return `${dialogOutFolder}/Dialog${i+1}`
 }
 
 
 export const getCardsPath = () => {
-  return path.resolve(__dirname, paths.cards);
+  return path.resolve(__rootDirname, paths.cards);
 }
 
 export const getTTSFilePath = ()=> {

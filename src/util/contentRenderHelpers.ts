@@ -1,11 +1,11 @@
 import { readFileSync } from "fs";
-
-function loadFileAsString(path) {
+import { getTTSFilePath } from "./config.ts";
+function loadFileAsString(path: string) {
     return readFileSync(path, "utf8");
 }
-function wrapInScriptTag(jsString) {
+function wrapInScriptTag(jsString: string) {
     return `<script>\n${jsString}\n</script>`;
 }
-function jsTTSScript(path){
-    return wrapInScriptTag(loadFileAsString(path))
+export function jsTTSScript(){
+    return wrapInScriptTag(loadFileAsString(getTTSFilePath()));
 }
