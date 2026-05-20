@@ -11,6 +11,7 @@ const __dirname = path.dirname(__filename) + backToRoot;
 const h5pFilename = 'h5p.json'
 const h5pContentFolderName = 'content';
 const h5pContentFilename = 'content.json';
+const ttsFilePath = `${__filename}/../tts.ts`
 // 1. Define the schema
 const args =  process.argv.slice(2);
 const options = {
@@ -117,3 +118,6 @@ export const getCardsPath = () => {
   return path.resolve(__dirname, paths.cards);
 }
 
+export const getTTSFilePath = ()=> {
+   return ttsFilePath;
+}
