@@ -32,8 +32,10 @@ const unsafePaths = ((paths) => {
     return {
       quizOutFolder: "dist/quizzes",
       dialogOutFolder: "dist/dialogs",
+      ftbOutFolder: "dist/ftb",
       questionSetFolderTemplate: "assets/h5p/qset",
       dialogFolderTemplate: "assets/h5p/dialog",
+      FolderTemplate: "assets/h5p/ftb",
       cards: "assets/cards.txt"
     }
   } else {
@@ -63,8 +65,10 @@ const unsafePaths = ((paths) => {
 const ConfigSchema = z.object({
   quizOutFolder: z.string().min(1),
   dialogOutFolder: z.string().min(1),
+  ftbOutFolder:  z.string().min(1),
   questionSetFolderTemplate: z.string().min(1),
   dialogFolderTemplate: z.string().min(1),
+  ftbFolderTemplate: z.string().min(1),
   cards: z.string().min(1),
 });
 export const paths = ConfigSchema.parse(unsafePaths);
@@ -73,6 +77,9 @@ export const getQuizFolderTemplatePath = () => {
 }
 export const getDialogFolderTemplatePath = () => {
   return path.resolve(__rootDirname, paths.dialogFolderTemplate);
+}
+export const getFtbFolderTemplatePath = () => {
+  return path.resolve(__rootDirname, paths.ftbFolderTemplate);
 }
 export const quizH5pTemplate = (() => {
   const p = path.join(getQuizFolderTemplatePath(),
@@ -84,6 +91,13 @@ export const dialogH5pTemplate = (() => {
                       h5pFilename);
   return JSON.parse(readFileSync(p, "utf8"));
 })()
+
+export const ftbH5pTemplate = (() => {
+  const p = path.join(getFtbFolderTemplatePath(),
+                      h5pFilename);
+  return JSON.parse(readFileSync(p, "utf8"));
+})()
+
 export const quizContentTemplate = (() => {
   const p = path.join(getQuizFolderTemplatePath(),
                       h5pContentFolderName, 
@@ -100,16 +114,27 @@ export const dialogContentTemplate = (() => {
   return JSON.parse(contentTemplateRaw);
 })()
  
+export const ftbContentTemplate = (() => {
+  const p = path.join(getFtbFolderTemplatePath(),
+                      h5pContentFolderName, 
+                      h5pContentFilename)
+  const contentTemplateRaw = readFileSync(p, "utf8");
+  return JSON.parse(contentTemplateRaw);
+})()
+
 export const quizOutFolder = path.resolve(__rootDirname, paths.quizOutFolder)
 export const getQuizFolder = (i:number) => {
   return `${quizOutFolder}/Quiz${i+1}`
 }
 export const dialogOutFolder = path.resolve(__rootDirname, paths.dialogOutFolder);
+export const ftbOutFolder = path.resolve(__rootDirname, paths.ftbOutFolder);
 export const getDialogFolder = (i:number) => {
   return `${dialogOutFolder}/Dialog${i+1}`
 }
 
-
+export const getFtbFolder = (i:number) => {
+  return `${ftbOutFolder}/ftb${i+1}`
+}
 export const getCardsPath = () => {
   return path.resolve(__rootDirname, paths.cards);
 }

@@ -19,12 +19,18 @@ import {
   getQuizFolder,
   quizContentTemplate,
   getQuizFolderTemplatePath,
+  quizOutFolder,
+
   dialogH5pTemplate,
   getDialogFolder,
   getDialogFolderTemplatePath,
   dialogContentTemplate,
-  quizOutFolder,
   dialogOutFolder,
+  ftbH5pTemplate,
+  getFtbFolder,
+  getFtbFolderTemplatePath,
+  ftbContentTemplate,
+  ftbOutFolder,
 } from './config.ts'
 
 import { jsTTSScript } from './contentRenderHelpers.ts'
@@ -51,7 +57,7 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
   }
 
 }
-//@todo finish
+//@todo finish?
 export const createDialogH5pJsonFiles = (data: QnaChunks) => {
   for(let i = 0; i < data.length; i++){
     let h5p = structuredClone(dialogH5pTemplate);
@@ -66,6 +72,72 @@ export const createDialogH5pJsonFiles = (data: QnaChunks) => {
   }
 
 }
+
+//@todo 
+
+export const createFTBFoldersFromTemplate = (data: QnaChunks) => {
+  for(let i = 0; i < data.length; i++){
+  
+    mkdirSync(getFtbFolder(i), { recursive: true });
+    cpSync(getFtbFolderTemplatePath(), getFtbFolder(i), {recursive: true});
+
+
+  }
+}
+
+export const createFTBH5pJsonFiles = (data: QnaChunks) => {
+  for(let i = 0; i < data.length; i++){
+    let h5p = structuredClone(ftbH5pTemplate);
+    h5p.title = `Dialog no. ${i + 1}`;
+    const folder = getFtbFolder(i);     
+    mkdirSync(folder, { recursive: true });
+    writeFileSync(
+      `${folder}/h5p.json`,
+       JSON.stringify(h5p, null),
+       "utf8"
+    );
+  }
+
+}
+
+
+export const createFTBContentJsonFiles = (data: MultiChunks) =>{ 
+  for(let i = 0; i < data.length; i++){
+    let content = structuredClone(ftbContentTemplate);
+    let dialogTemplate = structuredClone(content?.dialogs[0]);
+    content.dialogs =[];
+    if( typeof dialogTemplate !== "object" || typeof dialogTemplate === null ){
+      throw new Error("json structure not correct")
+    } else {
+      console.log("processing parsed json ...")
+    }
+
+    let set = data[i];
+    if(!set?.length) continue;
+    
+        for(let j = 0; j < set.length; j++){
+      // clone struction for main question struction
+      let dialog = structuredClone(dialogTemplate);
+      //add question text to structure
+      dialog.text = `<p style="text-align:center;">${set[j]?.qna.question}</p>`;
+
+      // @todo refactor and encapsulate the html wrapping
+      dialog.answer = `<p style="text-align:center;">${ set[j]?.qna.answer }</p>`
+   
+      content.dialogs.push(dialog);
+      
+    }
+    const folder = `${getDialogFolder(i)}/content`;
+    mkdirSync(folder, { recursive: true });
+    writeFileSync(
+      `${folder}/content.json`,
+       JSON.stringify(content, null),
+       "utf8"
+    );
+  }
+}
+
+//@todo end todo
 
 export const createDialogFoldersFromTemplate = (data: QnaChunks) => {
   for(let i = 0; i < data.length; i++){
