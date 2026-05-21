@@ -16,19 +16,20 @@ import type {
 
 import {
   quizH5pTemplate,
-  getQuizFolder,
+  getNumberedQuizFolder,
   quizContentTemplate,
-  getQuizFolderTemplatePath,
+  quizFolderTemplatePath,
   quizOutFolder,
 
   dialogH5pTemplate,
-  getDialogFolder,
-  getDialogFolderTemplatePath,
+  getNumberedDialogFolder,
+  dialogFolderTemplatePath,
   dialogContentTemplate,
   dialogOutFolder,
+  
   ftbH5pTemplate,
-  getFtbFolder,
-  getFtbFolderTemplatePath,
+  getNumberedFtbFolder,
+  ftbFolderTemplatePath,
   ftbContentTemplate,
   ftbOutFolder,
 } from './config.ts'
@@ -50,8 +51,8 @@ export const rmDistFolder = () => {
 export const createQuizFoldersFromTemplate = (data: QnaChunks) => {
   for (let i = 0; i < data.length; i++) {
     //@todo /quiz --- remove strings!!
-    mkdirSync(getQuizFolder(i), { recursive: true });
-    cpSync(getQuizFolderTemplatePath(), getQuizFolder(i), { recursive: true });
+    mkdirSync(getNumberedQuizFolder(i), { recursive: true });
+    cpSync(quizFolderTemplatePath, getNumberedQuizFolder(i), { recursive: true });
     //copy default folder to created folder
   }
 }
@@ -64,7 +65,7 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
     } else {
       console.warn("no title in json")
     }
-    const folder = getQuizFolder(i);
+    const folder = getNumberedQuizFolder(i);
     mkdirSync(folder, { recursive: true });
     writeFileSync(
       `${folder}/h5p.json`,
@@ -78,13 +79,8 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
 export const createQuizContentJsonFiles = (data: MultiChunks) => {
   const createAnsHtmlString = (ans: string) => {
     return `${jsTTSScript()}
-         <div>
             <span>${ans}</span>
-            ${createButton(ans)}
-            <button data-text="${encodeURIComponent(ans)}" onclick="speak(decodeURIComponent(this.dataset.text))">
-              listen
-            </button>             
-         </div>`;
+            ${createButton(ans)}`;
   }
   for (let i = 0; i < data.length; i++) {
     let content = structuredClone(quizContentTemplate);
@@ -132,7 +128,7 @@ export const createQuizContentJsonFiles = (data: MultiChunks) => {
 
     }
 
-    const folder = `${getQuizFolder(i)}/content`;
+    const folder = `${getNumberedQuizFolder(i)}/content`;
     mkdirSync(folder, { recursive: true });
     writeFileSync(
       `${folder}/content.json`,
@@ -148,8 +144,8 @@ export const createQuizContentJsonFiles = (data: MultiChunks) => {
 export const createDialogFoldersFromTemplate = (data: QnaChunks) => {
   for (let i = 0; i < data.length; i++) {
 
-    mkdirSync(getDialogFolder(i), { recursive: true });
-    cpSync(getDialogFolderTemplatePath(), getDialogFolder(i), { recursive: true });
+    mkdirSync(getNumberedDialogFolder(i), { recursive: true });
+    cpSync(dialogFolderTemplatePath, getNumberedDialogFolder(i), { recursive: true });
 
 
   }
@@ -159,7 +155,7 @@ export const createDialogH5pJsonFiles = (data: QnaChunks) => {
   for (let i = 0; i < data.length; i++) {
     let h5p = structuredClone(dialogH5pTemplate);
     h5p.title = `Dialog no. ${i + 1}`;
-    const folder = getDialogFolder(i);
+    const folder = getNumberedDialogFolder(i);
     mkdirSync(folder, { recursive: true });
     writeFileSync(
       `${folder}/h5p.json`,
@@ -199,7 +195,7 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
       content.dialogs.push(dialog);
 
     }
-    const folder = `${getDialogFolder(i)}/content`;
+    const folder = `${getNumberedDialogFolder(i)}/content`;
     mkdirSync(folder, { recursive: true });
     writeFileSync(
       `${folder}/content.json`,
@@ -214,8 +210,8 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
 export const createFtbFoldersFromTemplate = (data: QnaChunks) => {
   for (let i = 0; i < data.length; i++) {
 
-    mkdirSync(getFtbFolder(i), { recursive: true });
-    cpSync(getFtbFolderTemplatePath(), getFtbFolder(i), { recursive: true });
+    mkdirSync(getNumberedFtbFolder(i), { recursive: true });
+    cpSync(ftbFolderTemplatePath, getNumberedFtbFolder(i), { recursive: true });
 
 
   }
@@ -225,7 +221,7 @@ export const createFtbH5pJsonFiles = (data: QnaChunks) => {
   for (let i = 0; i < data.length; i++) {
     let h5p = structuredClone(ftbH5pTemplate);
     h5p.title = `Fill in the Blanks no. ${i + 1}`;
-    const folder = getFtbFolder(i);
+    const folder = getNumberedFtbFolder(i);
     mkdirSync(folder, { recursive: true });
     writeFileSync(
       `${folder}/h5p.json`,
@@ -271,7 +267,7 @@ export const createFtbContentJsonFiles = (data: MultiChunks) => {
       questions[j] += button;
     }
     content.questions = questions;
-    const folder = `${getFtbFolder(i)}/content`;
+    const folder = `${getNumberedFtbFolder(i)}/content`;
     mkdirSync(folder, { recursive: true });
     writeFileSync(
       `${folder}/content.json`,

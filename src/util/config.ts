@@ -14,118 +14,62 @@ const utilsFromRoot = "/src/util";
 const h5pFilename = 'h5p.json'
 const h5pContentFolderName = 'content';
 const h5pContentFilename = 'content.json';
+const distFolderName = 'dist';
+const assetsFolderName = 'assets';
+const assetsH5pFolderName = 'h5p'
 const ttsFilePath = `${ __rootDirname }${ utilsFromRoot }/tts.ts`
-// 1. Define the schema
-//////////////////////////////////////////////
-// PROCESS ARGS
-const args =  process.argv.slice(2);
-const options = {
-  paths: {
-  type: 'string'
-}
-} as const;
-//////////////////////////////
-// CONFIG.JSON
-export const getConfig = () => {
-  return JSON.parse(readFileSync(path.resolve(__rootDirname, "config.json"), "utf8"))
-}
 
-const { values } = parseArgs({ args, options });
-export const config = getConfig()
-/////////////////////////////////////////////////
-// STRINGS AND ZOD FOR TYPES
-const unsafePaths = ((paths) => {
-  if(!paths){
-    return {
-      quizOutFolder: "dist/quizzes",
-      dialogOutFolder: "dist/dialogs",
-      ftbOutFolder: "dist/ftb",
-      questionSetFolderTemplate: "assets/h5p/qset",
-      dialogFolderTemplate: "assets/h5p/dialog",
-      ftbFolderTemplate: "assets/h5p/ftb",
-      cards: "assets/cards.txt"
-    }
-  } else {
-      console.log(paths, config);
-    if (Array.isArray(config.paths)){
-      let p = config.paths as any[];
-        const foundIndex = p.findIndex((value)=>{
-          if (typeof value === 'object' && value !== null && !Array.isArray(value)){
-            let correctPaths = value[paths];
-            if (typeof correctPaths === 'object' && correctPaths !== null && !Array.isArray(correctPaths)) {
+export const paths = {
+      quizOutFolder: path.join(distFolderName, "quizzes"),
+      dialogOutFolder: path.join(distFolderName, "dialogs"),
+      ftbOutFolder: path.join(distFolderName, "ftb"),
+      questionSetFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, "qset"),
+      dialogFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, "dialog"),
+      ftbFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, "ftb"),
+      cards: path.join(assetsFolderName, "cards.txt"),
+    };
 
-              return true;
-
-            } else {
-              return false;
-
-            }
-          } 
-        })
-        if(foundIndex !== -1 ){
-          return config.paths[foundIndex][paths];
-        }
-    }
-  }  
-})(values.paths);
-// Run: node script.js --port 3000 --debug
-const ConfigSchema = z.object({
-  quizOutFolder: z.string().min(1),
-  dialogOutFolder: z.string().min(1),
-  ftbOutFolder:  z.string().min(1),
-  questionSetFolderTemplate: z.string().min(1),
-  dialogFolderTemplate: z.string().min(1),
-  ftbFolderTemplate: z.string().min(1),
-  cards: z.string().min(1),
-});
-export const paths = ConfigSchema.parse(unsafePaths);
 ////////////////////////////////////////////////
 // FOLDER TEMPLATE PATHS
-export const getQuizFolderTemplatePath = () => {
-  return path.resolve(__rootDirname, paths.questionSetFolderTemplate);
-}
-export const getDialogFolderTemplatePath = () => {
-  return path.resolve(__rootDirname, paths.dialogFolderTemplate);
-}
-export const getFtbFolderTemplatePath = () => {
-  return path.resolve(__rootDirname, paths.ftbFolderTemplate);
-}
+export const quizFolderTemplatePath = path.resolve(__rootDirname, paths.questionSetFolderTemplate);
+export const dialogFolderTemplatePath = path.resolve(__rootDirname, paths.dialogFolderTemplate);
+export const ftbFolderTemplatePath = path.resolve(__rootDirname, paths.ftbFolderTemplate);
 ///////////////////////////////////////////////
 // H5P TEMPLATES
 export const quizH5pTemplate = (() => {
-  const p = path.join(getQuizFolderTemplatePath(),
+  const p = path.join(quizFolderTemplatePath,
                       h5pFilename);
   return JSON.parse(readFileSync(p, "utf8"));
 })()
 export const dialogH5pTemplate = (() => {
-  const p = path.join(getDialogFolderTemplatePath(),
+  const p = path.join(dialogFolderTemplatePath,
                       h5pFilename);
   return JSON.parse(readFileSync(p, "utf8"));
 })()
 
 export const ftbH5pTemplate = (() => {
-  const p = path.join(getFtbFolderTemplatePath(),
+  const p = path.join(ftbFolderTemplatePath,
                       h5pFilename);
   return JSON.parse(readFileSync(p, "utf8"));
 })()
 ///////////////////////////////////////////////////////////
 // CONTENT TEMPLATES
 export const quizContentTemplate = (() => {
-  const p = path.join(getQuizFolderTemplatePath(),
+  const p = path.join(quizFolderTemplatePath,
                       h5pContentFolderName, 
                       h5pContentFilename)
   return JSON.parse(readFileSync(p, "utf8"));
 })()
 
 export const dialogContentTemplate = (() => {
-  const p = path.join(getDialogFolderTemplatePath(),
+  const p = path.join(dialogFolderTemplatePath,
                       h5pContentFolderName, 
                       h5pContentFilename)
   return JSON.parse(readFileSync(p, "utf8"));
 })()
  
 export const ftbContentTemplate = (() => {
-  const p = path.join(getFtbFolderTemplatePath(),
+  const p = path.join(ftbFolderTemplatePath,
                       h5pContentFolderName, 
                       h5pContentFilename)
   return JSON.parse(readFileSync(p, "utf8"));
@@ -133,16 +77,16 @@ export const ftbContentTemplate = (() => {
 ///////////////////////////////////////////////////
 // OUT FOLDERS
 export const quizOutFolder = path.resolve(__rootDirname, paths.quizOutFolder)
-export const getQuizFolder = (i:number) => {
+export const getNumberedQuizFolder = (i:number) => {
   return `${quizOutFolder}/Quiz${i+1}`
 }
 export const dialogOutFolder = path.resolve(__rootDirname, paths.dialogOutFolder);
-export const ftbOutFolder = path.resolve(__rootDirname, paths.ftbOutFolder);
-export const getDialogFolder = (i:number) => {
+export const getNumberedDialogFolder = (i:number) => {
   return `${dialogOutFolder}/Dialog${i+1}`
 }
 
-export const getFtbFolder = (i:number) => {
+export const ftbOutFolder = path.resolve(__rootDirname, paths.ftbOutFolder);
+export const getNumberedFtbFolder = (i:number) => {
   return `${ftbOutFolder}/ftb${i+1}`
 }
 //////////////////////////////////////////////////////
