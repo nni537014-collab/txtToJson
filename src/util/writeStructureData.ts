@@ -89,8 +89,6 @@ export const createQuizContentJsonFiles = (data: MultiChunks) => {
     content.questions = []
     if (typeof questionTemplate !== "object" || typeof questionTemplate === null) {
       throw new Error("json structure not correct")
-    } else {
-      console.log("processing parsed json ...")
     }
     let set = data[i];
     if (!set?.length) continue;

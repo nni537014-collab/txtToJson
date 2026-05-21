@@ -16,16 +16,19 @@ const h5pContentFolderName = 'content';
 const h5pContentFilename = 'content.json';
 const distFolderName = 'dist';
 const assetsFolderName = 'assets';
-const assetsH5pFolderName = 'h5p'
+const assetsH5pFolderName = 'h5p';
+const quiz = "quiz";
+const dialog = "dialog";
+const ftb = "ftb";
 const ttsFilePath = `${ __rootDirname }${ utilsFromRoot }/tts.ts`
 
 export const paths = {
-      quizOutFolder: path.join(distFolderName, "quizzes"),
-      dialogOutFolder: path.join(distFolderName, "dialogs"),
-      ftbOutFolder: path.join(distFolderName, "ftb"),
-      questionSetFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, "qset"),
-      dialogFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, "dialog"),
-      ftbFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, "ftb"),
+      quizOutFolder: path.join(distFolderName, quiz),
+      dialogOutFolder: path.join(distFolderName, dialog),
+      ftbOutFolder: path.join(distFolderName, ftb),
+      questionSetFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, quiz),
+      dialogFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, dialog),
+      ftbFolderTemplate: path.join(assetsFolderName, assetsH5pFolderName, ftb),
       cards: path.join(assetsFolderName, "cards.txt"),
     };
 
@@ -78,16 +81,16 @@ export const ftbContentTemplate = (() => {
 // OUT FOLDERS
 export const quizOutFolder = path.resolve(__rootDirname, paths.quizOutFolder)
 export const getNumberedQuizFolder = (i:number) => {
-  return `${quizOutFolder}/Quiz${i+1}`
+  return path.join(quizOutFolder, `${quiz}${i+1}`)
 }
 export const dialogOutFolder = path.resolve(__rootDirname, paths.dialogOutFolder);
 export const getNumberedDialogFolder = (i:number) => {
-  return `${dialogOutFolder}/Dialog${i+1}`
+  return path.join(dialogOutFolder, `${dialog}${i+1}`);
 }
 
 export const ftbOutFolder = path.resolve(__rootDirname, paths.ftbOutFolder);
 export const getNumberedFtbFolder = (i:number) => {
-  return `${ftbOutFolder}/ftb${i+1}`
+  return path.join(ftbOutFolder, `${ftb}${i+1}`);
 }
 //////////////////////////////////////////////////////
 // CARDS
