@@ -9,3 +9,8 @@ function wrapInScriptTag(jsString: string) {
 export function jsTTSScript(){
     return wrapInScriptTag(loadFileAsString(getTTSFilePath()));
 }
+export function createButton(ans: string){
+  return `<button data-text="${encodeURIComponent(ans)}" onclick="speak(decodeURIComponent(this.dataset.text))">
+              listen
+          </button>`;
+}

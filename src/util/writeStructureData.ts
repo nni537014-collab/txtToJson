@@ -33,7 +33,10 @@ import {
   ftbOutFolder,
 } from './config.ts'
 
-import { jsTTSScript } from './contentRenderHelpers.ts'
+import { 
+  jsTTSScript,
+  createButton,
+ } from './contentRenderHelpers.ts'
 ///////////////////////////////////////////////
 // WRITE UTIL FUNCS
 export const rmDistFolder = () => {
@@ -77,6 +80,7 @@ export const createQuizContentJsonFiles = (data: MultiChunks) => {
     return `${jsTTSScript()}
          <div>
             <span>${ans}</span>
+            ${createButton(ans)}
             <button data-text="${encodeURIComponent(ans)}" onclick="speak(decodeURIComponent(this.dataset.text))">
               listen
             </button>             
@@ -183,12 +187,15 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
     for (let j = 0; j < set.length; j++) {
       // clone struction for main question struction
       let dialog = structuredClone(dialogTemplate);
+      const ans = set[j]?.qna.answer;
+      if(!ans) continue;
       //add question text to structure
       dialog.text = `<p style="text-align:center;">${set[j]?.qna.question}</p>`;
 
       // @todo refactor and encapsulate the html wrapping
-      dialog.answer = `<p style="text-align:center;">${set[j]?.qna.answer}</p>`
-
+      dialog.answer += jsTTSScript();
+      dialog.answer += `<p style="text-align:center;">${set[j]?.qna.answer}</p>`;
+      dialog.answer += createButton(ans);
       content.dialogs.push(dialog);
 
     }
@@ -255,9 +262,12 @@ export const createFtbContentJsonFiles = (data: MultiChunks) => {
     if (!set?.length) continue;
     let questions: string[] = [];
     for (let j = 0; j < set.length; j++) {
-
+      const ans = set[j]?.qna.answer;
+      if(!ans) continue;
+      questions[j] += jsTTSScript();
       questions[j] += `<p style="text-align:center;">${set[j]?.qna.question}</p></br>`;
       questions[j] += `<p style="text-align:center;">${formatFtbQuestion(set[j]?.qna.answer)}</p>`
+      questions[j] += createButton(ans);
     }
     content.questions = questions;
     const folder = `${getFtbFolder(i)}/content`;
