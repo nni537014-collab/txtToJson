@@ -3,3 +3,5 @@ export "dialog" card and "fill the blank" json structures
 dialog card structure - reptition mode and moodle storage
 
 "ftb" - allow repeats
+
+tts - button handler can prevent default to play text without triggering an answer?
