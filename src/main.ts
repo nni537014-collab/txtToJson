@@ -35,4 +35,4 @@ createDialogContentJsonFiles(chunkToMulti(asQna));
   
 createFtbFoldersFromTemplate(asQna);
 createFtbH5pJsonFiles(asQna);
-//createFtbContentJsonFiles(chunkToMulti(asQna));
+createFtbContentJsonFiles(chunkToMulti(asQna));
