@@ -15,6 +15,9 @@ import {
   createDialogContentJsonFiles,
   createDialogFoldersFromTemplate,
   createDialogH5pJsonFiles,
+  createFtbFoldersFromTemplate,
+  createFtbH5pJsonFiles,
+  createFtbContentJsonFiles,
 } from './util/writeStructureData.ts'
 
 
@@ -30,3 +33,6 @@ createDialogFoldersFromTemplate(asQna);
 createDialogH5pJsonFiles(asQna);
 createDialogContentJsonFiles(chunkToMulti(asQna));
   
+createFtbFoldersFromTemplate(asQna);
+createFtbH5pJsonFiles(asQna);
+//createFtbContentJsonFiles(chunkToMulti(asQna));

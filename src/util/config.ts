@@ -35,7 +35,7 @@ const unsafePaths = ((paths) => {
       ftbOutFolder: "dist/ftb",
       questionSetFolderTemplate: "assets/h5p/qset",
       dialogFolderTemplate: "assets/h5p/dialog",
-      FolderTemplate: "assets/h5p/ftb",
+      ftbFolderTemplate: "assets/h5p/ftb",
       cards: "assets/cards.txt"
     }
   } else {
