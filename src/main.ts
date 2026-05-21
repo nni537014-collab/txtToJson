@@ -25,6 +25,10 @@ import {
 const asQna = loadChunks(getCardsPath());
 
 rmDistFolder();
+createFtbFoldersFromTemplate(asQna);
+createFtbH5pJsonFiles(asQna);
+createFtbContentJsonFiles(chunkToMulti(asQna))
+
 createQuizFoldersFromTemplate(asQna);
 createQuizH5pJsonFiles(asQna);
 createQuizContentJsonFiles(chunkToMulti(asQna));
@@ -33,6 +37,4 @@ createDialogFoldersFromTemplate(asQna);
 createDialogH5pJsonFiles(asQna);
 createDialogContentJsonFiles(chunkToMulti(asQna));
   
-createFtbFoldersFromTemplate(asQna);
-createFtbH5pJsonFiles(asQna);
-createFtbContentJsonFiles(chunkToMulti(asQna));
+;

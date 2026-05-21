@@ -74,7 +74,7 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
   }
 
 }
-
+//@todo button func to replace string
 export const createQuizContentJsonFiles = (data: MultiChunks) => {
   const createAnsHtmlString = (ans: string) => {
     return `${jsTTSScript()}
@@ -193,7 +193,7 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
       dialog.text = `<p style="text-align:center;">${set[j]?.qna.question}</p>`;
 
       // @todo refactor and encapsulate the html wrapping
-      dialog.answer += jsTTSScript();
+      dialog.answer = jsTTSScript();
       dialog.answer += `<p style="text-align:center;">${set[j]?.qna.answer}</p>`;
       dialog.answer += createButton(ans);
       content.dialogs.push(dialog);
@@ -263,11 +263,12 @@ export const createFtbContentJsonFiles = (data: MultiChunks) => {
     let questions: string[] = [];
     for (let j = 0; j < set.length; j++) {
       const ans = set[j]?.qna.answer;
-      if(!ans) continue;
-      questions[j] += jsTTSScript();
+      if(typeof ans !== "string") continue;
+      const button = createButton(ans)
+      questions[j] = jsTTSScript();
       questions[j] += `<p style="text-align:center;">${set[j]?.qna.question}</p></br>`;
       questions[j] += `<p style="text-align:center;">${formatFtbQuestion(set[j]?.qna.answer)}</p>`
-      questions[j] += createButton(ans);
+      questions[j] += button;
     }
     content.questions = questions;
     const folder = `${getFtbFolder(i)}/content`;
