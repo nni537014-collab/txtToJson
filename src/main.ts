@@ -1,23 +1,23 @@
-import { 
-  getCardsPath 
+import {
+    getCardsPath
 } from './util/config.ts'
 
 import {
-  loadChunks,
-  chunkToMulti
+    loadChunks,
+    chunkToMulti
 } from './util/loadStructuredData.ts'
 
 import {
-  rmDistFolder,
-  createQuizH5pJsonFiles,
-  createQuizContentJsonFiles,
-  createQuizFoldersFromTemplate,
-  createDialogContentJsonFiles,
-  createDialogFoldersFromTemplate,
-  createDialogH5pJsonFiles,
-  createFtbFoldersFromTemplate,
-  createFtbH5pJsonFiles,
-  createFtbContentJsonFiles,
+    rmDistFolder,
+    createQuizH5pJsonFiles,
+    createQuizContentJsonFiles,
+    createQuizFoldersFromTemplate,
+    createDialogContentJsonFiles,
+    createDialogFoldersFromTemplate,
+    createDialogH5pJsonFiles,
+    createFtbFoldersFromTemplate,
+    createFtbH5pJsonFiles,
+    createFtbContentJsonFiles,
 } from './util/writeStructureData.ts'
 
 
@@ -36,5 +36,3 @@ createQuizContentJsonFiles(chunkToMulti(asQna));
 createDialogFoldersFromTemplate(asQna);
 createDialogH5pJsonFiles(asQna);
 createDialogContentJsonFiles(chunkToMulti(asQna));
-  
-;

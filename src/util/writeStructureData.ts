@@ -4,6 +4,8 @@ import {
   cpSync,
   rmSync
 } from "fs";
+import fs from "fs";
+import archiver from "archiver";
 
 import {
   randomUUID
@@ -68,6 +70,36 @@ const addCustomLibToH5pJson = <T extends h5pJson> (templ: T)=> {
   }
   templ.preloadedDependencies.push(customLib);
   return templ; 
+}
+
+const archiveContent = (dirpath: string) => {
+
+  const output = fs.createWriteStream("clean.zip");
+
+  const archive = archiver("zip", {
+    zlib: { level: 9 },
+    forceLocalTime: true
+  });
+
+  archive.pipe(output);
+
+  // Remove directory entries (equivalent to -D)
+  archive.directory(dirpath, false, file => {
+    if (file.name.endsWith("/")) return false; // skip directory entries
+    return file;
+  });
+
+  // Remove extra attributes (equivalent to -X)
+  archive.on("entry", entry => {
+    entry = {
+      ...entry,
+      mode: 0o644,          // strip permissions
+      // mtime: new Date(0)    // strip timestamps
+    };
+  });
+
+  archive.finalize();
+
 }
 //////////////////////////////////////////////
 // QUIZ
