@@ -38,6 +38,22 @@ import {
   jsTTSScript,
   createButton,
  } from './contentRenderHelpers.ts'
+
+//////////////////////////////////
+// DATA & TYPES
+type H5pDep = {
+  "machineName": string,
+  "majorVersion": string,
+  "minorVersion": string
+}
+type h5pJson = {
+  "preloadedDependencies"?: H5pDep[]
+}
+const customLib: H5pDep = {
+  machineName: "H5P.TTS",
+  majorVersion: "1",
+  minorVersion: "0"
+}
 ///////////////////////////////////////////////
 // WRITE UTIL FUNCS
 export const rmDistFolder = () => {
@@ -45,14 +61,7 @@ export const rmDistFolder = () => {
   rmSync(dialogOutFolder, { recursive: true, force: true });
   rmSync(ftbOutFolder, { recursive: true, force: true });
 }
-type H5pDep = {
-  "machineName": string,
-  "majorVersion": string,
-  "minorVersion": string
-} 
-type h5pJson = {
-  "preloadedDependencies"?: H5pDep[]
-}
+
 const addCustomLibToH5pJson = <T extends h5pJson> (templ: T)=> {
   if (!Array.isArray(templ?.preloadedDependencies)){
     templ.preloadedDependencies = [];
@@ -80,6 +89,7 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
     } else {
       console.warn("no title in json")
     }
+    h5p = addCustomLibToH5pJson(h5p);
     const folder = getNumberedQuizFolder(i);
     mkdirSync(folder, { recursive: true });
     writeFileSync(
@@ -165,6 +175,7 @@ export const createDialogH5pJsonFiles = (data: QnaChunks) => {
   for (let i = 0; i < data.length; i++) {
     let h5p = structuredClone(dialogH5pTemplate);
     h5p.title = `Dialog no. ${i + 1}`;
+    h5p = addCustomLibToH5pJson(h5p);
     const folder = getNumberedDialogFolder(i);
     mkdirSync(folder, { recursive: true });
     writeFileSync(
@@ -230,6 +241,7 @@ export const createFtbH5pJsonFiles = (data: QnaChunks) => {
   for (let i = 0; i < data.length; i++) {
     let h5p = structuredClone(ftbH5pTemplate);
     h5p.title = `Fill in the Blanks no. ${i + 1}`;
+    h5p = addCustomLibToH5pJson(h5p);
     const folder = getNumberedFtbFolder(i);
     mkdirSync(folder, { recursive: true });
     writeFileSync(
