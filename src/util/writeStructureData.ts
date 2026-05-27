@@ -6,7 +6,7 @@ import {
 } from "fs";
 import fs from "fs";
 import archiver from "archiver";
-
+import path from "path"
 import {
   randomUUID
 } from "crypto";
@@ -72,9 +72,16 @@ const addCustomLibToH5pJson = <T extends h5pJson> (templ: T)=> {
   return templ; 
 }
 
-const archiveContent = (dirpath: string) => {
+const splitPath = (p: string) =>  {
+  const dir = path.dirname(p);      // everything except the last part
+  const last = path.basename(p);    // last directory or filename
 
-  const output = fs.createWriteStream("clean.zip");
+  return { dir, last };
+}
+const archiveContent = (dirpath: string) => {
+  const {dir, last} = splitPath(dirpath);
+  
+  const output = fs.createWriteStream(dirpath+".zip");
 
   const archive = archiver("zip", {
     zlib: { level: 9 },
