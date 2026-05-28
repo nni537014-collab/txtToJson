@@ -18,6 +18,7 @@ import {
     createFtbFoldersFromTemplate,
     createFtbH5pJsonFiles,
     createFtbContentJsonFiles,
+    archiveContent
 } from './util/writeStructureData.ts'
 
 
@@ -36,3 +37,4 @@ createQuizContentJsonFiles(chunkToMulti(asQna));
 createDialogFoldersFromTemplate(asQna);
 createDialogH5pJsonFiles(asQna);
 createDialogContentJsonFiles(chunkToMulti(asQna));
+archiveContent();

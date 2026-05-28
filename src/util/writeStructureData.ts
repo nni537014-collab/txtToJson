@@ -40,6 +40,11 @@ import {
   jsTTSScript,
   createButton,
  } from './contentRenderHelpers.ts'
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 //////////////////////////////////
 // DATA & TYPES
@@ -78,7 +83,7 @@ const splitPath = (p: string) =>  {
 
   return { dir, last };
 }
-const archiveContent = (/*dirpath: string*/) => {
+export const archiveContent = (/*dirpath: string*/) => {
   // create a file to stream archive data to.
 const output = fs.createWriteStream(__dirname + "/example.zip");
 const archive = new ZipArchive({
