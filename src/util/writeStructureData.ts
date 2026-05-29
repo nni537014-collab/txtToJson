@@ -209,9 +209,7 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
 //@todo button func to replace string
 export const createQuizContentJsonFiles = (data: MultiChunks) => {
   const createAnsHtmlString = (ans: string) => {
-    return `${jsTTSScript()}
-            <span>${ans}</span>
-            ${createButton(ans)}`;
+    return `<span>${ans}</span>`;
   }
   for (let i = 0; i < data.length; i++) {
     let content = structuredClone(quizContentTemplate);
@@ -316,9 +314,9 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
       dialog.text = `<p style="text-align:center;">${set[j]?.qna.question}</p>`;
 
       // @todo refactor and encapsulate the html wrapping
-      dialog.answer = jsTTSScript();
-      dialog.answer += `<p style="text-align:center;">${set[j]?.qna.answer}</p>`;
-      dialog.answer += createButton(ans);
+      // dialog.answer = jsTTSScript();
+      dialog.answer = `<p style="text-align:center;">${set[j]?.qna.answer}</p>`;
+      // dialog.answer += createButton(ans);
       content.dialogs.push(dialog);
 
     }
@@ -388,10 +386,10 @@ export const createFtbContentJsonFiles = (data: MultiChunks) => {
       const ans = set[j]?.qna.answer;
       if(typeof ans !== "string") continue;
       const button = createButton(ans)
-      questions[j] = jsTTSScript();
-      questions[j] += `<p style="text-align:center;">${set[j]?.qna.question}</p></br>`;
+      // questions[j] = jsTTSScript();
+      questions[j] = `<p style="text-align:center;">${set[j]?.qna.question}</p></br>`;
       questions[j] += `<p style="text-align:center;">${formatFtbQuestion(set[j]?.qna.answer)}</p>`
-      questions[j] += button;
+      // questions[j] += button;
     }
     content.questions = questions;
     const folder = `${getNumberedFtbFolder(i)}/content`;
