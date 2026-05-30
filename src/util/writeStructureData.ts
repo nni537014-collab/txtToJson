@@ -209,7 +209,7 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
 //@todo button func to replace string
 export const createQuizContentJsonFiles = (data: MultiChunks) => {
   const createAnsHtmlString = (ans: string) => {
-    return `<span>${ans}</span>`;
+    return `<p class="answer">${ans}</span>`;
   }
   for (let i = 0; i < data.length; i++) {
     let content = structuredClone(quizContentTemplate);
@@ -311,11 +311,11 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
       const ans = set[j]?.qna.answer;
       if(!ans) continue;
       //add question text to structure
-      dialog.text = `<p style="text-align:center;">${set[j]?.qna.question}</p>`;
+      dialog.text = `<p class="question" style="text-align:center;">${set[j]?.qna.question}</p>`;
 
       // @todo refactor and encapsulate the html wrapping
       // dialog.answer = jsTTSScript();
-      dialog.answer = `<p style="text-align:center;">${set[j]?.qna.answer}</p>`;
+      dialog.answer = `<p class="answer" style="text-align:center;">${set[j]?.qna.answer}</p>`;
       // dialog.answer += createButton(ans);
       content.dialogs.push(dialog);
 
