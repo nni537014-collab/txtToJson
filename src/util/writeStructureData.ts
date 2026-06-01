@@ -28,7 +28,7 @@ import {
   dialogFolderTemplatePath,
   dialogContentTemplate,
   dialogOutFolder,
-  
+
   ftbH5pTemplate,
   getNumberedFtbFolder,
   ftbFolderTemplatePath,
@@ -39,10 +39,10 @@ import {
   langBase
 } from './config.ts'
 
-import { 
+import {
   jsTTSScript,
   createButton,
- } from './contentRenderHelpers.ts'
+} from './contentRenderHelpers.ts'
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
@@ -72,15 +72,15 @@ export const rmDistFolder = () => {
   rmSync(ftbOutFolder, { recursive: true, force: true });
 }
 
-const addCustomLibToH5pJson = <T extends h5pJson> (templ: T)=> {
-  if (!Array.isArray(templ?.preloadedDependencies)){
+const addCustomLibToH5pJson = <T extends h5pJson>(templ: T) => {
+  if (!Array.isArray(templ?.preloadedDependencies)) {
     templ.preloadedDependencies = [];
   }
   templ.preloadedDependencies.push(customLib);
-  return templ; 
+  return templ;
 }
 
-const splitPath = (p: string) =>  {
+const splitPath = (p: string) => {
   const dir = path.dirname(p);      // everything except the last part
   const last = path.basename(p);    // last directory or filename
 
@@ -89,10 +89,10 @@ const splitPath = (p: string) =>  {
 
 export const archiveAll = (data: QnaChunks) => {
   const doOne = (path: string) => {
-    const {dir, last} = splitPath(path);
+    const { dir, last } = splitPath(path);
     archiveContent(dir, last);
   }
-  for(let i = 0; i < data.length; i++){
+  for (let i = 0; i < data.length; i++) {
     doOne(getNumberedDialogFolder(i));
     doOne(getNumberedFtbFolder(i));
     doOne(getNumberedQuizFolder(i));
@@ -103,58 +103,59 @@ const archiveContent = (dir: string, subDir: string) => {
   //@todo path.join to replace path concat below
   const zipPath = `${dir}/${subDir}.zip`;
   const h5pPath = `${dir}/${subDir}.h5p`;
+  const h5pJsonFilename = `${dir}/${subDir}/h5p.json`;
+  const contentJsonFilename = `${dir}/${subDir}/content/content.json`;
 
-const output = fs.createWriteStream(zipPath);
-const archive = new ZipArchive({
-  zlib: { level: 9 }, // Sets the compression level.
-});
+  const output = fs.createWriteStream(zipPath);
+  const archive = new ZipArchive({
+    zlib: { level: 9 }, // Sets the compression level.
+  });
 
-// listen for all archive data to be written
-// 'close' event is fired only when a file descriptor is involved
-output.on("close", function () {
-  console.log(archive.pointer() + " total bytes");
-  console.log(
-    "archiver has been finalized and the output file descriptor has closed.",
-  );
-  fs.copyFileSync(zipPath, h5pPath);
-  console.log("Copied ZIP to H5P:", h5pPath);
-});
+  // listen for all archive data to be written
+  // 'close' event is fired only when a file descriptor is involved
+  output.on("close", function () {
+    console.log(archive.pointer() + " total bytes");
+    console.log(
+      "archiver has been finalized and the output file descriptor has closed.",
+    );
+    fs.copyFileSync(zipPath, h5pPath);
+    console.log("Copied ZIP to H5P:", h5pPath);
+  });
 
-// This event is fired when the data source is drained no matter what was the data source.
-// It is not part of this library but rather from the NodeJS Stream API.
-// @see: https://nodejs.org/api/stream.html#stream_event_end
-output.on("end", function () {
-  console.log("Data has been drained");
-});
+  // This event is fired when the data source is drained no matter what was the data source.
+  // It is not part of this library but rather from the NodeJS Stream API.
+  // @see: https://nodejs.org/api/stream.html#stream_event_end
+  output.on("end", function () {
+    console.log("Data has been drained");
+  });
 
-// good practice to catch warnings (ie stat failures and other non-blocking errors)
-archive.on("warning", function (err) {
-  if (err.code === "ENOENT") {
-    // log warning
-  } else {
-    // throw error
+  // good practice to catch warnings (ie stat failures and other non-blocking errors)
+  archive.on("warning", function (err) {
+    if (err.code === "ENOENT") {
+      // log warning
+    } else {
+      // throw error
+      throw err;
+    }
+  });
+
+  // good practice to catch this error explicitly
+  archive.on("error", function (err) {
     throw err;
-  }
-});
+  });
 
-// good practice to catch this error explicitly
-archive.on("error", function (err) {
-  throw err;
-});
+  // pipe archive data to the file
+  archive.pipe(output);
 
-// pipe archive data to the file
-archive.pipe(output);
+  // append a file from stream
 
-// append a file from stream
-const h5pJsonFilename = dir + "/" + subDir + "/h5p.json";
-archive.append(fs.createReadStream(h5pJsonFilename), { name: "h5p.json" });
-const contentJsonFilename =  dir + "/" + subDir + "/content/content.json"
-// append a file from string
-archive.append(fs.createReadStream(contentJsonFilename), { name: "content/content.json" });
+  archive.append(fs.createReadStream(h5pJsonFilename), { name: "h5p.json" });
+  // append a file from string
+  archive.append(fs.createReadStream(contentJsonFilename), { name: "content/content.json" });
 
-// finalize the archive (ie we are done appending files but streams have to finish yet)
-// 'close', 'end' or 'finish' may be fired right after calling this method so register to them beforehand
-archive.finalize();
+  // finalize the archive (ie we are done appending files but streams have to finish yet)
+  // 'close', 'end' or 'finish' may be fired right after calling this method so register to them beforehand
+  archive.finalize();
   /*  const {dir, last} = splitPath(dirpath);
   
   const output = fs.createWriteStream(dirpath+".zip");
@@ -189,10 +190,10 @@ archive.finalize();
 
 export const createQuizFoldersFromTemplate = (data: QnaChunks) => {
   // for (let i = 0; i < data.length; i++) {
-    //@todo /quiz --- remove strings!!
-    mkdirSync(getNumberedQuizFolder(0), { recursive: true });
-    cpSync(quizFolderTemplatePath, getNumberedQuizFolder(0), { recursive: true });
-    //copy default folder to created folder
+  //@todo /quiz --- remove strings!!
+  mkdirSync(getNumberedQuizFolder(0), { recursive: true });
+  cpSync(quizFolderTemplatePath, getNumberedQuizFolder(0), { recursive: true });
+  //copy default folder to created folder
   // }
 }
 
@@ -218,7 +219,7 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
 //@todo button func to replace string
 export const createQuizContentJsonFiles = (data: MultiChunks) => {
   const createAnsHtmlString = (ans: string) => {
-    return `<p class="answer">${ans}</span>`;
+    return `<p class="answer" data-lang="${langLearning}">${ans}</span>`;
   }
   for (let i = 0; i < data.length; i++) {
     let content = structuredClone(quizContentTemplate);
@@ -234,7 +235,7 @@ export const createQuizContentJsonFiles = (data: MultiChunks) => {
       // clone struction for main question struction
       let question = structuredClone(questionTemplate);
       //add question text to structure
-      question.params.question = `<div>${set[j]?.qna.question}</div>`;
+      question.params.question = `<p data-lang="${langBase}">${set[j]?.qna.question}</p>`;
       //drill into question template to get a answer template 
       //of which a few may be used
       let answerTemplate = structuredClone(questionTemplate?.params?.answers[0]);
@@ -279,8 +280,8 @@ export const createQuizContentJsonFiles = (data: MultiChunks) => {
 // DIALOG
 export const createDialogFoldersFromTemplate = (data: QnaChunks) => {
   // for (let i = 0; i < data.length; i++) {
-    mkdirSync(getNumberedDialogFolder(0), { recursive: true });
-    cpSync(dialogFolderTemplatePath, getNumberedDialogFolder(0), { recursive: true });
+  mkdirSync(getNumberedDialogFolder(0), { recursive: true });
+  cpSync(dialogFolderTemplatePath, getNumberedDialogFolder(0), { recursive: true });
   // }
 }
 
@@ -318,7 +319,7 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
       // clone struction for main question struction
       let dialog = structuredClone(dialogTemplate);
       const ans = set[j]?.qna.answer;
-      if(!ans) continue;
+      if (!ans) continue;
       //add question text to structure
       dialog.text = `<p class="question" style="text-align:center;" data-lang="${langBase}" >${set[j]?.qna.question}</p>`;
 
@@ -344,8 +345,8 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
 export const createFtbFoldersFromTemplate = (data: QnaChunks) => {
   // for (let i = 0; i < data.length; i++) {
 
-    mkdirSync(getNumberedFtbFolder(0), { recursive: true });
-    cpSync(ftbFolderTemplatePath, getNumberedFtbFolder(0), { recursive: true });
+  mkdirSync(getNumberedFtbFolder(0), { recursive: true });
+  cpSync(ftbFolderTemplatePath, getNumberedFtbFolder(0), { recursive: true });
 
   // }
 }
@@ -368,20 +369,20 @@ export const createFtbH5pJsonFiles = (data: QnaChunks) => {
 
 export const createFtbContentJsonFiles = (data: MultiChunks) => {
   const formatFtbQuestion = (question: string | undefined) => {
-    if(typeof question !== "string") throw new Error("bad data set")
+    if (typeof question !== "string") throw new Error("bad data set")
     const words = question.trim().split(/\s+/);
     let longestIndex = -1;
     let longestLength = 0;
 
     for (let i = 0; i < words.length; i++) {
       const word = words[i];
-      if(!word) continue
+      if (!word) continue
       if (word.length > longestLength) {
         longestLength = word.length;
         longestIndex = i;
       }
     }
-    if(longestIndex === -1) throw new Error("bad data set");
+    if (longestIndex === -1) throw new Error("bad data set");
     words[longestIndex] = `*${words[longestIndex]}*`
     return words.join(" ");
   }
@@ -393,12 +394,10 @@ export const createFtbContentJsonFiles = (data: MultiChunks) => {
     let questions: string[] = [];
     for (let j = 0; j < set.length; j++) {
       const ans = set[j]?.qna.answer;
-      if(typeof ans !== "string") continue;
-      const button = createButton(ans)
-      // questions[j] = jsTTSScript();
-      questions[j] = `<p style="text-align:center;">${set[j]?.qna.question}</p></br>`;
-      questions[j] += `<p style="text-align:center;">${formatFtbQuestion(set[j]?.qna.answer)}</p>`
-      // questions[j] += button;
+      if (typeof ans !== "string") continue;
+      // const button = createButton(ans)  
+      questions[j] = `<p style="text-align:center; data-lang="${langBase}"">${set[j]?.qna.question}</p></br>`;
+      questions[j] += `<p style="text-align:center;" data-lang="${langLearning}">${formatFtbQuestion(set[j]?.qna.answer)}</p>`
     }
     content.questions = questions;
     const folder = `${getNumberedFtbFolder(i)}/content`;
