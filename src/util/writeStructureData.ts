@@ -34,6 +34,9 @@ import {
   ftbFolderTemplatePath,
   ftbContentTemplate,
   ftbOutFolder,
+
+  langLearning,
+  langBase
 } from './config.ts'
 
 import { 
@@ -97,7 +100,11 @@ export const archiveAll = (data: QnaChunks) => {
 }
 const archiveContent = (dir: string, subDir: string) => {
   // create a file to stream archive data to.
-const output = fs.createWriteStream(dir + "/" + subDir + ".zip");
+  //@todo path.join to replace path concat below
+  const zipPath = `${dir}/${subDir}.zip`;
+  const h5pPath = `${dir}/${subDir}.h5p`;
+
+const output = fs.createWriteStream(zipPath);
 const archive = new ZipArchive({
   zlib: { level: 9 }, // Sets the compression level.
 });
@@ -109,6 +116,8 @@ output.on("close", function () {
   console.log(
     "archiver has been finalized and the output file descriptor has closed.",
   );
+  fs.copyFileSync(zipPath, h5pPath);
+  console.log("Copied ZIP to H5P:", h5pPath);
 });
 
 // This event is fired when the data source is drained no matter what was the data source.
@@ -311,11 +320,11 @@ export const createDialogContentJsonFiles = (data: MultiChunks) => {
       const ans = set[j]?.qna.answer;
       if(!ans) continue;
       //add question text to structure
-      dialog.text = `<p class="question" style="text-align:center;">${set[j]?.qna.question}</p>`;
+      dialog.text = `<p class="question" style="text-align:center;" data-lang="${langBase}" >${set[j]?.qna.question}</p>`;
 
       // @todo refactor and encapsulate the html wrapping
       // dialog.answer = jsTTSScript();
-      dialog.answer = `<p class="answer" style="text-align:center;">${set[j]?.qna.answer}</p>`;
+      dialog.answer = `<p class="answer" style="text-align:center;" data-lang="${langLearning}">${set[j]?.qna.answer}</p>`;
       // dialog.answer += createButton(ans);
       content.dialogs.push(dialog);
 
