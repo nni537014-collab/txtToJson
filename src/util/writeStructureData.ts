@@ -396,8 +396,8 @@ export const createFtbContentJsonFiles = (data: MultiChunks) => {
       const ans = set[j]?.qna.answer;
       if (typeof ans !== "string") continue;
       // const button = createButton(ans)  
-      questions[j] = `<p style="text-align:center; data-lang="${langBase}"">${set[j]?.qna.question}</p></br>`;
-      questions[j] += `<p style="text-align:center;" data-lang="${langLearning}">${formatFtbQuestion(set[j]?.qna.answer)}</p>`
+      questions[j] = `<p data-lang="${langBase}"">${set[j]?.qna.question}</p></br>`;
+      questions[j] += `<p data-lang="${langLearning}">${formatFtbQuestion(set[j]?.qna.answer)}</p>`
     }
     content.questions = questions;
     const folder = `${getNumberedFtbFolder(i)}/content`;
