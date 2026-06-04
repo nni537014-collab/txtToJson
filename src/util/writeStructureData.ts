@@ -35,6 +35,13 @@ import {
   ftbContentTemplate,
   ftbOutFolder,
 
+  quizListeningH5pTemplate,
+  getNumberedQuizListeningFolder,
+  quizListeningFolderTemplatePath,
+  quizListeningContentTemplate,
+  quizListeningOutFolder,
+
+
   langLearning,
   langBase
 } from './config.ts'
@@ -96,6 +103,7 @@ export const archiveAll = (data: QnaChunks) => {
     doOne(getNumberedDialogFolder(i));
     doOne(getNumberedFtbFolder(i));
     doOne(getNumberedQuizFolder(i));
+    doOne(getNumberedQuizListeningFolder(i))
   }
 }
 const archiveContent = (dir: string, subDir: string) => {
@@ -219,7 +227,7 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
 //@todo button func to replace string
 export const createQuizContentJsonFiles = (data: MultiChunks) => {
   const createAnsHtmlString = (ans: string) => {
-    return `<p class="answer" data-lang="${langLearning}">${ans}</span>`;
+    return `<p class="answer" data-lang="${langLearning}">${ans}</p>`;
   }
   for (let i = 0; i < data.length; i++) {
     let content = structuredClone(quizContentTemplate);
@@ -409,8 +417,97 @@ export const createFtbContentJsonFiles = (data: MultiChunks) => {
     );
   }
 }
+////////////////////////////////////////////////
+// QUIZ LISTENING
 
-//@todo end todo
+export const createQuizListeningFoldersFromTemplate = (data: QnaChunks) => {
+  // for (let i = 0; i < data.length; i++) {
+  //@todo /quiz --- remove strings!!
+  mkdirSync(getNumberedQuizListeningFolder(0), { recursive: true });
+  cpSync(quizFolderTemplatePath, getNumberedQuizListeningFolder(0), { recursive: true });
+  //copy default folder to created folder
+  // }
+}
+
+export const createQuizListeningH5pJsonFiles = (data: QnaChunks) => {
+  for (let i = 0; i < data.length; i++) {
+    let h5p = structuredClone(quizListeningH5pTemplate);
+    if (h5p?.title) {
+      h5p.title = `Quiz Listening no. ${i + 1}`;
+    } else {
+      console.warn("no title in json")
+    }
+    h5p = addCustomLibToH5pJson(h5p);
+    const folder = getNumberedQuizListeningFolder(i);
+    mkdirSync(folder, { recursive: true });
+    writeFileSync(
+      `${folder}/h5p.json`,
+      JSON.stringify(h5p, null),
+      "utf8"
+    );
+  }
+
+}
+//@todo button func to replace string
+export const createQuizListeningContentJsonFiles = (data: MultiChunks) => {
+  const createAnsHtmlString = (ans: string) => {
+    return `<p class="answer" data-lang="${langLearning}" >${ans}</p>`;
+  }
+  for (let i = 0; i < data.length; i++) {
+    let content = structuredClone(quizListeningContentTemplate);
+    let questionTemplate = structuredClone(content?.questions[0]);
+    // reset questions after taking template
+    content.questions = []
+    if (typeof questionTemplate !== "object" || typeof questionTemplate === null) {
+      throw new Error("json structure not correct")
+    }
+    let set = data[i];
+    if (!set?.length) continue;
+    for (let j = 0; j < set.length; j++) {
+      // clone struction for main question struction
+      let question = structuredClone(questionTemplate);
+      //add question text to structure
+      question.params.question = `<p data-lang="${langBase}" style="display:none">${set[j]?.qna.answer}</p>`;
+      //drill into question template to get a answer template 
+      //of which a few may be used
+      let answerTemplate = structuredClone(questionTemplate?.params?.answers[0]);
+      //create clone of ans templ for the one correct ans possible at 
+      // the moment
+      let correctAnswer = structuredClone(answerTemplate);
+      correctAnswer.correct = true;
+      // @todo refactor and encapsulate the html wrapping
+      const ans = set[j]?.qna.question;
+      if (!ans) continue
+      correctAnswer.text = createAnsHtmlString(ans);
+      //ans array can store correct and incorrect answers
+      let answers: any[] = [];
+      answers.push(correctAnswer);
+      //deal with all wrong ans
+      //console.log(set[j]?.wrong); process.exit();
+      set[j]?.wrong.map((wrongUn: any) => {
+        let answer = structuredClone(answerTemplate);
+        answer.correct = false;
+        answer.text = createAnsHtmlString(wrongUn.question);
+        answers.push(answer);
+      })
+      //add ans array to question structure
+
+      question.params.answers = answers;
+      question.subContentId = randomUUID();
+      content.questions.push(question);
+
+    }
+
+    const folder = `${getNumberedQuizListeningFolder(i)}/content`;
+    mkdirSync(folder, { recursive: true });
+    writeFileSync(
+      `${folder}/content.json`,
+      JSON.stringify(content, null),
+      "utf8"
+    );
+  }
+}
+
 
 
 

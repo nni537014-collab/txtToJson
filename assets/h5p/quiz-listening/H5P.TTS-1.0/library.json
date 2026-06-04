@@ -1,0 +1,16 @@
+{
+  "title": "text to speech",
+  "machineName": "H5P.TTS",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 72,
+  "runnable": 0,
+  "author": "gol",
+  "license": "pd",
+  "description": "TTS add on",
+  "preloadedJs": [
+    {
+      "path": "dist/h5p.tts.js"
+    }
+  ]
+}

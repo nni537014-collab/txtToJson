@@ -9,15 +9,23 @@ import {
 
 import {
     rmDistFolder,
+
     createQuizH5pJsonFiles,
     createQuizContentJsonFiles,
     createQuizFoldersFromTemplate,
+
     createDialogContentJsonFiles,
     createDialogFoldersFromTemplate,
     createDialogH5pJsonFiles,
+
     createFtbFoldersFromTemplate,
     createFtbH5pJsonFiles,
     createFtbContentJsonFiles,
+
+    createQuizListeningFoldersFromTemplate,
+    createQuizListeningH5pJsonFiles,
+    createQuizListeningContentJsonFiles,
+
     archiveAll
 } from './util/writeStructureData.ts'
 
@@ -37,4 +45,9 @@ createQuizContentJsonFiles(chunkToMulti(asQna));
 createDialogFoldersFromTemplate(asQna);
 createDialogH5pJsonFiles(asQna);
 createDialogContentJsonFiles(chunkToMulti(asQna));
+
+createQuizListeningFoldersFromTemplate(asQna);
+createQuizListeningH5pJsonFiles(asQna);
+createQuizListeningContentJsonFiles(chunkToMulti(asQna));
+
 archiveAll(asQna);

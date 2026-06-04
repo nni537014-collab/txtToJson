@@ -1,0 +1,29 @@
+{
+  "name": "h5p.tts",
+  "version": "1.0.0",
+  "description": "tts insertion",
+  "homepage": "https://github.com/nni537014-collab/lib#readme",
+  "bugs": {
+    "url": "https://github.com/nni537014-collab/lib/issues"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "watch": "webpack --watch --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nni537014-collab/lib.git"
+  },
+  "license": "ISC",
+  "author": "gol",
+  "type": "module",
+  "main": "index.js",
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "babel-loader": "^10.1.1",
+    "h5p-cli": "^1.1.6",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3"
+  }
+}
