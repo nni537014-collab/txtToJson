@@ -11,7 +11,8 @@ function loadVoices() {
 }
 
 // Simple multilingual speak() function
-async function speak(text, lang = "en-US") {
+async function speak(text, lang = "en-US", repetitions = 1) {
+    repetitions = Math.max(1, repetitions);
     const voices = await loadVoices();
 
     const utter = new SpeechSynthesisUtterance(text);
@@ -22,7 +23,9 @@ async function speak(text, lang = "en-US") {
     if (match) utter.voice = match;
 
     speechSynthesis.cancel(); // stop previous speech
-    speechSynthesis.speak(utter);
+    for (let i = 0; i < repetitions; i++) {
+        speechSynthesis.speak(utter);
+    }
 }
 
 // Attach a click handler that speaks the given text
