@@ -43,7 +43,8 @@ import {
 
 
   langLearning,
-  langBase
+  langBase,
+  cssQuizListeningQuestion
 } from './config.ts'
 
 import {
@@ -467,7 +468,7 @@ export const createQuizListeningContentJsonFiles = (data: MultiChunks) => {
       // clone struction for main question struction
       let question = structuredClone(questionTemplate);
       //add question text to structure
-      question.params.question = `<p data-lang="${langBase}" style="display:none">${set[j]?.qna.answer}</p>`;
+      question.params.question = `<p class="${cssQuizListeningQuestion}" data-lang="${langBase}" style="display:none">${set[j]?.qna.answer}</p>`;
       //drill into question template to get a answer template 
       //of which a few may be used
       let answerTemplate = structuredClone(questionTemplate?.params?.answers[0]);

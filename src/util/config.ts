@@ -22,7 +22,7 @@ const quizListening = "quiz-listening";
 const dialog = "dialog";
 const ftb = "ftb";
 const ttsFilePath = `${__rootDirname}${utilsFromRoot}/tts.ts`
-
+export const cssQuizListeningQuestion = "listening-question"
 export const langBase = 'en-US';
 export const langLearning = 'es-ES';
 export const paths = {
