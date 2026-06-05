@@ -11,9 +11,9 @@ function loadVoices() {
 }
 
 // Simple multilingual speak() function
-async function speak(text, lang = "en-US", repetitions = 1) {
+async function speak(text: string, lang = "en-US", repetitions = 1) {
     repetitions = Math.max(1, repetitions);
-    const voices = await loadVoices();
+    const voices = await loadVoices() as SpeechSynthesisVoice[];
 
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = lang;
@@ -21,18 +21,13 @@ async function speak(text, lang = "en-US", repetitions = 1) {
     // Best matching voice for the language
     const match = voices.find(v => v.lang.toLowerCase().startsWith(lang.toLowerCase()));
     if (match) utter.voice = match;
-
+    
     speechSynthesis.cancel(); // stop previous speech
     for (let i = 0; i < repetitions; i++) {
+        console.log("speaking", text, "voice", match, "lang", lang);
         speechSynthesis.speak(utter);
     }
 }
 
-// Attach a click handler that speaks the given text
-function attach(id, textToSpeak) {
-    const el = document.getElementById(id);
-    if (!el) return console.warn("Element not found:", id);
 
-    el.addEventListener("click", () => speak(textToSpeak));
-}
 
