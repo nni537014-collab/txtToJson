@@ -491,7 +491,9 @@ export const createQuizListeningContentJsonFiles = (data: MultiChunks) => {
       //add ans array to question structure
 
       question.params.answers = answers;
+      //@todo move to help func and use the same for question set generation
       question.subContentId = randomUUID();
+      question.metadata.title = "Question no. " + j;
       content.questions.push(question);
 
     }

@@ -5,3 +5,5 @@ dialog card structure - reptition mode and moodle storage
 "ftb" - allow repeats
 
 tts - button handler can prevent default to play text without triggering an answer?
+
+add titles to questions - shows up at end of question set
