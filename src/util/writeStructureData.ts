@@ -222,6 +222,10 @@ export const createQuizH5pJsonFiles = (data: QnaChunks) => {
   }
 
 }
+const addQuestionUUIDAndMeta = (question: any, questionNumber: number) => {
+  question.subContentId = randomUUID();
+  question.metadata.title = `Question no. ${++questionNumber}`;
+}
 //@todo button func to replace string
 export const createQuizContentJsonFiles = (data: MultiChunks) => {
   const createAnsHtmlString = (ans: string) => {
@@ -266,7 +270,8 @@ export const createQuizContentJsonFiles = (data: MultiChunks) => {
       //add ans array to question structure
 
       question.params.answers = answers;
-      question.subContentId = randomUUID();
+
+      addQuestionUUIDAndMeta(question, j);
       content.questions.push(question);
 
     }
@@ -492,8 +497,7 @@ export const createQuizListeningContentJsonFiles = (data: MultiChunks) => {
 
       question.params.answers = answers;
       //@todo move to help func and use the same for question set generation
-      question.subContentId = randomUUID();
-      question.metadata.title = "Question no. " + j;
+      addQuestionUUIDAndMeta(question, j);
       content.questions.push(question);
 
     }
