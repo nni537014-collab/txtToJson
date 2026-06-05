@@ -47,10 +47,7 @@ import {
   cssQuizListeningQuestion
 } from './config.ts'
 
-import {
-  jsTTSScript,
-  createButton,
-} from './contentRenderHelpers.ts'
+
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 

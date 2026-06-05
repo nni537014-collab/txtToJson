@@ -123,6 +123,4 @@ export const getCardsPath = () => {
 }
 //////////////////////////////////////////////
 // TTS 
-export const getTTSFilePath = () => {
-  return ttsFilePath;
-}
+
